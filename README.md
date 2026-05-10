@@ -147,95 +147,57 @@ cd .. && npm run dev
 - Google Generative AI for sentiment analysis
 - CORS and security middleware
 
-### Dự kiến cấu trúc thư mục 
-#Project Structure
+# Project Structure
+
+```text
 CSC-main/
-│
-├── App.tsx
-│   └── sửa để thêm tab/flow: Live Call Copilot
-│
-├── types.ts
-│   └── thêm type: TranscriptSegment, STTResult, LiveSuggestion, CallReport
-│
-├── constants.ts
-│   └── thêm constants cho call score, warning type, risk level
 │
 ├── components/
 │   ├── LiveAnalysisView.tsx
-│   │   └── sửa để nhận transcript từ STT và hiển thị suggestion
-│   │
-│   ├── SpeechToTextPanel.tsx              # NEW
-│   ├── AudioUploadPanel.tsx               # NEW
-│   ├── MicRecorderPanel.tsx               # NEW, nếu làm mic chunk
-│   ├── LiveTranscriptPanel.tsx            # NEW
-│   ├── SuggestedResponseCard.tsx          # NEW
-│   ├── ComplianceWarningCard.tsx          # NEW
-│   ├── CallAnalysisReportView.tsx         # NEW
-│   └── CallScoreCard.tsx                  # NEW
+│   ├── SpeechToTextPanel.tsx
+│   ├── AudioUploadPanel.tsx
+│   ├── MicRecorderPanel.tsx
+│   ├── LiveTranscriptPanel.tsx
+│   ├── SuggestedResponseCard.tsx
+│   ├── ComplianceWarningCard.tsx
+│   ├── CallAnalysisReportView.tsx
+│   └── CallScoreCard.tsx
 │
 ├── services/
-│   ├── geminiService.ts
-│   ├── dashboardService.ts
-│   ├── knotApiService.ts
-│   │
-│   ├── speechService.ts                   # NEW
-│   ├── liveSuggestionService.ts           # NEW
-│   └── callAnalysisService.ts             # NEW
-│
-├── data/
-│   ├── staticContent.ts
-│   └── sampleCalls.ts                     # NEW, fallback transcript/audio demo
+│   ├── speechService.ts
+│   ├── liveSuggestionService.ts
+│   └── callAnalysisService.ts
 │
 ├── backend/
-│   ├── server.js
-│   │   └── thêm route:
-│   │       app.use('/api/stt', sttRoutes)
-│   │       app.use('/api/agent', agentRoutes)
-│   │       app.use('/api/analytics', analyticsRoutes)
-│   │
 │   ├── routes/
-│   │   ├── gemini.js
-│   │   ├── openai.js
-│   │   ├── dashboard.js
-│   │   ├── knotApi.js
-│   │   │
-│   │   ├── stt.js                         # NEW
-│   │   ├── agent.js                       # NEW
-│   │   └── analytics.js                   # NEW
+│   │   ├── stt.js
+│   │   ├── agent.js
+│   │   └── analytics.js
 │   │
 │   ├── services/
-│   │   ├── dataContextService.js
-│   │   │
 │   │   ├── stt/
-│   │   │   ├── whisperService.js          # NEW
-│   │   │   ├── audioUploadService.js      # NEW
-│   │   │   ├── audioChunkService.js       # NEW, nếu làm mic chunk
-│   │   │   └── transcriptFormatter.js     # NEW
+│   │   │   ├── whisperService.js
+│   │   │   ├── audioUploadService.js
+│   │   │   ├── audioChunkService.js
+│   │   │   └── transcriptFormatter.js
 │   │   │
 │   │   ├── agent/
-│   │   │   ├── recommendationService.js   # NEW
-│   │   │   ├── promptBuilder.js           # NEW
-│   │   │   └── contextManager.js          # NEW
+│   │   │   ├── recommendationService.js
+│   │   │   ├── promptBuilder.js
+│   │   │   └── contextManager.js
 │   │   │
 │   │   └── analytics/
-│   │       ├── scoringService.js          # NEW
-│   │       ├── complianceService.js       # NEW
-│   │       ├── toneAnalysisService.js     # NEW
-│   │       └── reportService.js           # NEW
+│   │       ├── scoringService.js
+│   │       ├── complianceService.js
+│   │       ├── toneAnalysisService.js
+│   │       └── reportService.js
 │   │
 │   ├── scripts/
-│   │   └── transcribe.py                  # NEW
+│   │   └── transcribe.py
 │   │
 │   ├── uploads/
-│   │   └── audio files
-│   │
-│   ├── temp_chunks/
-│   │   └── chunk audio files
-│   │
-│   └── requirements.txt                   # NEW: openai-whisper, torch
+│   └── temp_chunks/
 │
-└── docs/
-    ├── SENTIMENT_ANALYSIS.md
-    ├── COACHING_FEATURES.md
-    ├── api_contract.md                   # NEW
-    └── demo_script.md                    # NEW
+└── data/
+    └── sampleCalls.ts
+```
