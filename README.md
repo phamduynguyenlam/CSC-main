@@ -147,7 +147,8 @@ cd .. && npm run dev
 - Google Generative AI for sentiment analysis
 - CORS and security middleware
 
-### Dự kiến cấu trúc thư mục bản cải tiến
+### Dự kiến cấu trúc thư mục 
+#Project Structure
 CSC-main/
 │
 ├── App.tsx
