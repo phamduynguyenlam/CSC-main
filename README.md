@@ -147,6 +147,94 @@ cd .. && npm run dev
 - Google Generative AI for sentiment analysis
 - CORS and security middleware
 
-## License
-
-MIT License
+### Dự kiến cấu trúc thư mục bản cải tiến
+CSC-main/
+│
+├── App.tsx
+│   └── sửa để thêm tab/flow: Live Call Copilot
+│
+├── types.ts
+│   └── thêm type: TranscriptSegment, STTResult, LiveSuggestion, CallReport
+│
+├── constants.ts
+│   └── thêm constants cho call score, warning type, risk level
+│
+├── components/
+│   ├── LiveAnalysisView.tsx
+│   │   └── sửa để nhận transcript từ STT và hiển thị suggestion
+│   │
+│   ├── SpeechToTextPanel.tsx              # NEW
+│   ├── AudioUploadPanel.tsx               # NEW
+│   ├── MicRecorderPanel.tsx               # NEW, nếu làm mic chunk
+│   ├── LiveTranscriptPanel.tsx            # NEW
+│   ├── SuggestedResponseCard.tsx          # NEW
+│   ├── ComplianceWarningCard.tsx          # NEW
+│   ├── CallAnalysisReportView.tsx         # NEW
+│   └── CallScoreCard.tsx                  # NEW
+│
+├── services/
+│   ├── geminiService.ts
+│   ├── dashboardService.ts
+│   ├── knotApiService.ts
+│   │
+│   ├── speechService.ts                   # NEW
+│   ├── liveSuggestionService.ts           # NEW
+│   └── callAnalysisService.ts             # NEW
+│
+├── data/
+│   ├── staticContent.ts
+│   └── sampleCalls.ts                     # NEW, fallback transcript/audio demo
+│
+├── backend/
+│   ├── server.js
+│   │   └── thêm route:
+│   │       app.use('/api/stt', sttRoutes)
+│   │       app.use('/api/agent', agentRoutes)
+│   │       app.use('/api/analytics', analyticsRoutes)
+│   │
+│   ├── routes/
+│   │   ├── gemini.js
+│   │   ├── openai.js
+│   │   ├── dashboard.js
+│   │   ├── knotApi.js
+│   │   │
+│   │   ├── stt.js                         # NEW
+│   │   ├── agent.js                       # NEW
+│   │   └── analytics.js                   # NEW
+│   │
+│   ├── services/
+│   │   ├── dataContextService.js
+│   │   │
+│   │   ├── stt/
+│   │   │   ├── whisperService.js          # NEW
+│   │   │   ├── audioUploadService.js      # NEW
+│   │   │   ├── audioChunkService.js       # NEW, nếu làm mic chunk
+│   │   │   └── transcriptFormatter.js     # NEW
+│   │   │
+│   │   ├── agent/
+│   │   │   ├── recommendationService.js   # NEW
+│   │   │   ├── promptBuilder.js           # NEW
+│   │   │   └── contextManager.js          # NEW
+│   │   │
+│   │   └── analytics/
+│   │       ├── scoringService.js          # NEW
+│   │       ├── complianceService.js       # NEW
+│   │       ├── toneAnalysisService.js     # NEW
+│   │       └── reportService.js           # NEW
+│   │
+│   ├── scripts/
+│   │   └── transcribe.py                  # NEW
+│   │
+│   ├── uploads/
+│   │   └── audio files
+│   │
+│   ├── temp_chunks/
+│   │   └── chunk audio files
+│   │
+│   └── requirements.txt                   # NEW: openai-whisper, torch
+│
+└── docs/
+    ├── SENTIMENT_ANALYSIS.md
+    ├── COACHING_FEATURES.md
+    ├── api_contract.md                   # NEW
+    └── demo_script.md                    # NEW
