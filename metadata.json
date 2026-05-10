@@ -1,0 +1,7 @@
+{
+  "name": "Unified CX Dashboard",
+  "description": "An AI-powered emotion and feedback intelligence platform to unify customer experience data, detect real-time emotion, and provide predictive insights for enterprises.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
