@@ -56,7 +56,6 @@ npm run dev
 **OpenAI API Key (Required for AI Chat):**
 - Sign up at [OpenAI Platform](https://platform.openai.com/account/api-keys)
 - Create new API key (starts with `sk-proj-`)
-- Add billing method (pay-per-use, very affordable)
 
 **Google Gemini API Key (Optional):**
 - Visit [Google AI Studio](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/)
