@@ -16,8 +16,8 @@
 
 #### 1. Clone and Install
 ```bash
-git clone https://github.com/quack3rs/HackPrinceton.git
-cd HackPrinceton
+git clone https://github.com/phamduynguyenlam/CSC-main.git
+cd CSC-main
 npm install
 cd backend && npm install
 ```
