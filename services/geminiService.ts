@@ -76,6 +76,45 @@ export interface AskApiRequest {
     history?: Array<{ role: string; parts: string[] }>;
 }
 
+export interface CustomerAssistRequest {
+    transcript: string;
+    customerId?: number;
+    callLogId?: number;
+    conversationHistory?: ChatMessage[];
+}
+
+export interface CustomerAssistResponse {
+    success: boolean;
+    response: string;
+    customerContext: {
+        customer_profile: {
+            customer_id: number;
+            full_name: string;
+            phone_number: string;
+            email?: string | null;
+            address?: string | null;
+            notes?: string | null;
+        };
+        account_summary: {
+            total_orders: number;
+            total_logged_calls: number;
+            total_previous_calls: number;
+            unresolved_issue_count: number;
+        };
+        recent_orders: Array<Record<string, unknown>>;
+        recent_calls: Array<Record<string, unknown>>;
+        unresolved_issues: Array<Record<string, unknown>>;
+    };
+    metadata: {
+        model: string;
+        usedFallback: boolean;
+        customerId: number;
+        source: string;
+        timestamp: string;
+        usage?: unknown;
+    };
+}
+
 type Content = {
     role: string;
     parts: string[];
@@ -179,14 +218,17 @@ export async function askGeminiQuestion(request: AskApiRequest): Promise<AskApiR
     }
 }
 
-export async function analyzeTranscriptForSuggestions(transcript: string): Promise<SentimentAnalysis> {
+export async function analyzeTranscriptForSuggestions(
+    transcript: string,
+    options?: { phoneNumber?: string }
+): Promise<SentimentAnalysis> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/gemini/analyze-transcript`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ transcript })
+            body: JSON.stringify({ transcript, phoneNumber: options?.phoneNumber })
         });
 
         if (!response.ok) {
@@ -240,7 +282,7 @@ export async function analyzeTranscriptForSuggestions(transcript: string): Promi
     }
 }
 
-export async function getAssistantResponse(prompt: string, history: Content[] = []): Promise<string> {
+export async function getAssistantResponse(prompt: string, history: Content[] = [], _context?: unknown): Promise<string> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/gemini/assistant`, {
             method: 'POST',
@@ -260,6 +302,24 @@ export async function getAssistantResponse(prompt: string, history: Content[] = 
         console.error('Error getting assistant response:', error);
         return 'I am currently unable to process your request. Please try again later.';
     }
+}
+
+export async function getCustomerAssistResponse(request: CustomerAssistRequest): Promise<CustomerAssistResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/customer-assist/respond`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return data as CustomerAssistResponse;
 }
 
 export async function quickSentimentCheck(text: string): Promise<SentimentAnalysis> {

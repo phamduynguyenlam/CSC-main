@@ -1,4 +1,10 @@
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
+# SenseAI - CX Analytics Platform 🍵
+
+A comprehensive customer experience analytics platform that combines real-time sentiment analysis, AI-powered insights, and intelligent business intelligence for superior customer understanding.
 
 ## Features
 
@@ -14,10 +20,14 @@
 - **Backend**: Node.js with Express and Socket.IO
 - **AI Integration**: Google Gemini API for natural language processing
 
+## 🚀 Quick Start for Collaborators
+
+### ⚡ Setup (5 minutes)
+
 #### 1. Clone and Install
 ```bash
-git clone https://github.com/phamduynguyenlam/CSC-main.git
-cd CSC-main
+git clone https://github.com/quack3rs/HackPrinceton.git
+cd HackPrinceton
 npm install
 cd backend && npm install
 ```
@@ -56,6 +66,7 @@ npm run dev
 **OpenAI API Key (Required for AI Chat):**
 - Sign up at [OpenAI Platform](https://platform.openai.com/account/api-keys)
 - Create new API key (starts with `sk-proj-`)
+- Add billing method (pay-per-use, very affordable)
 
 **Google Gemini API Key (Optional):**
 - Visit [Google AI Studio](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/)
@@ -136,57 +147,6 @@ cd .. && npm run dev
 - Google Generative AI for sentiment analysis
 - CORS and security middleware
 
-# Project Structure
+## License
 
-```text
-CSC-main/
-│
-├── components/
-│   ├── LiveAnalysisView.tsx
-│   ├── SpeechToTextPanel.tsx
-│   ├── AudioUploadPanel.tsx
-│   ├── MicRecorderPanel.tsx
-│   ├── LiveTranscriptPanel.tsx
-│   ├── SuggestedResponseCard.tsx
-│   ├── ComplianceWarningCard.tsx
-│   ├── CallAnalysisReportView.tsx
-│   └── CallScoreCard.tsx
-│
-├── services/
-│   ├── speechService.ts
-│   ├── liveSuggestionService.ts
-│   └── callAnalysisService.ts
-│
-├── backend/
-│   ├── routes/
-│   │   ├── stt.js
-│   │   ├── agent.js
-│   │   └── analytics.js
-│   │
-│   ├── services/
-│   │   ├── stt/
-│   │   │   ├── whisperService.js
-│   │   │   ├── audioUploadService.js
-│   │   │   ├── audioChunkService.js
-│   │   │   └── transcriptFormatter.js
-│   │   │
-│   │   ├── agent/
-│   │   │   ├── recommendationService.js
-│   │   │   ├── promptBuilder.js
-│   │   │   └── contextManager.js
-│   │   │
-│   │   └── analytics/
-│   │       ├── scoringService.js
-│   │       ├── complianceService.js
-│   │       ├── toneAnalysisService.js
-│   │       └── reportService.js
-│   │
-│   ├── scripts/
-│   │   └── transcribe.py
-│   │
-│   ├── uploads/
-│   └── temp_chunks/
-│
-└── data/
-    └── sampleCalls.ts
-```
+MIT License

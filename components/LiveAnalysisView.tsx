@@ -1012,7 +1012,9 @@ const LiveAnalysisView: React.FC = () => {
 
 
     try {
-      const analysis = await analyzeTranscriptForSuggestions(text);
+      const analysis = await analyzeTranscriptForSuggestions(text, {
+        phoneNumber: getCallDetails(selectedCall || 'live-analysis')?.phoneNumber
+      });
       
       // Get local coaching as fallback or enhancement
       const localCoaching = getLocalCoachingSuggestions(analysis.emotion, analysis.sentimentScore || 5);
@@ -1186,6 +1188,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'live-analysis') {
       return {
         name: 'Live Audio Analysis',
+        phoneNumber: '0901234567',
         status: audioState.isRecording ? 'Active' : 'Stopped',
         transcript: audioState.transcript,
         emotion: audioState.emotion,
@@ -1198,6 +1201,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'sarah') {
       return {
         name: 'Sarah Johnson',
+        phoneNumber: '0912345678',
         status: 'Satisfied',
         transcript: [
           { speaker: 'Customer' as const, text: "I've been having issues with my order...", timestamp: '10:15:32' },
@@ -1207,6 +1211,36 @@ const LiveAnalysisView: React.FC = () => {
         suggestion: "Customer mentions this is a repeat issue. Acknowledge their frustration and offer immediate escalation to prevent churn.",
         emotion: 'Frustrated',
         sentiment: 4.2
+      };
+    }
+    if (callId === 'mike') {
+      return {
+        name: 'Mike Chen',
+        phoneNumber: '0933456789',
+        status: 'Concerned',
+        transcript: [
+          { speaker: 'Customer' as const, text: "I am calling again because my refund is still pending.", timestamp: '11:02:13' },
+          { speaker: 'Agent' as const, text: "Let me review your account and recent order history.", timestamp: '11:02:28' }
+        ],
+        emotion: 'Concerned',
+        sentiment: 4.2,
+        suggestion: "Customer mentions a repeat unresolved refund. Acknowledge prior friction and verify refund status before promising a timeline.",
+        isLive: false
+      };
+    }
+    if (callId === 'emma') {
+      return {
+        name: 'Emma Wilson',
+        phoneNumber: '0944567890',
+        status: 'Frustrated',
+        transcript: [
+          { speaker: 'Customer' as const, text: "This is the second late delivery this month and I want compensation.", timestamp: '09:41:08' },
+          { speaker: 'Agent' as const, text: "I understand. Let me check the previous cases linked to your account.", timestamp: '09:41:26' }
+        ],
+        emotion: 'Frustrated',
+        sentiment: 2.8,
+        suggestion: "Repeat delivery failure should be treated as high priority. Acknowledge the pattern and offer a clear next step immediately.",
+        isLive: false
       };
     }
     return null;

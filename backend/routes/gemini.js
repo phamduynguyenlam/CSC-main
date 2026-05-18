@@ -21,11 +21,142 @@ import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import vader from 'vader-sentiment';
+import { isDbConfigured } from '../services/db/mysql.js';
+import { getCustomerContextByPhoneNumber } from '../services/db/customerRepository.js';
+import { buildCompactCustomerContext } from '../services/customerContextService.js';
 
 dotenv.config();
 
 const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+
+function buildTranscriptAnalysisPrompt(transcript, customerContext = null) {
+  const customerContextBlock = customerContext
+    ? `
+        CUSTOMER CONTEXT:
+        ${JSON.stringify(customerContext, null, 2)}
+
+        CONTEXT USAGE RULES:
+        - Use customer history only when it changes urgency, tone, or recommended next action.
+        - If you detect repeat unresolved issues, increase priority and advise acknowledgment of prior friction.
+        - Do not invent order details, policies, or promises beyond the provided customer context.
+      `
+    : '';
+
+  return `
+        You are an expert sentiment analysis AI trained on thousands of customer conversations. Analyze this statement with MAXIMUM ACCURACY.
+
+        CUSTOMER STATEMENT: "${transcript}"
+        ${customerContextBlock}
+
+        ADVANCED ANALYSIS RULES:
+
+        1. EMOTION DETECTION PRIORITY (choose ONLY ONE, in exact order):
+           
+           IMMEDIATE NEGATIVE DETECTION (if ANY indicator present):
+           - "Angry": hate, furious, pissed, mad, livid, outraged, disgusted, fed up, sick of, can't stand, rage, fuck, shit, damn, hell, asshole, bitch, unacceptable, ridiculous, bullshit, garbage, trash, worthless
+           - "Frustrated": frustrated, annoying, annoyed, irritated, doesn't work, not working, broken, stupid, terrible, awful, horrible, wtf, wth, omg, seriously, ugh, argh, tried everything, still broken, keeps happening
+           - "Disgusted": disgusting, gross, nasty, revolting, repulsive, sick, horrible, hideous, appalling, vile, nauseating, offensive
+           - "Disappointed": disappointed, sucks, bad, worse, terrible, disappointing, let down, expected better, useless, pathetic, weak, lame, boring, underwhelming, not impressed
+           
+           SARCASM DETECTION (negative despite positive words):
+           - "oh great", "just great", "wonderful" + negative context = Frustrated
+           - "perfect" + "..." or negative tone = Frustrated
+           - "fantastic" + sarcastic context = Frustrated
+           
+           MIXED/CONDITIONAL EMOTIONS:
+           - "I guess", "whatever", "fine whatever", "if you say so", "yeah right" = Disappointed
+           
+           POSITIVE EMOTIONS (only if no negative detected):
+           - "Excited": excited, amazing, fantastic, incredible, awesome, can't wait, love it, perfect, excellent, brilliant, joyful, joyous, thrilled, elated, ecstatic, overjoyed
+           - "Grateful": thank, thanks, appreciate, grateful, helpful, blessing, thankful, blessed
+           - "Happy": happy, pleased, delighted, great, wonderful, good, nice, cool, glad, cheerful, joy, blissful, content, merry, uplifted
+           - "Satisfied": satisfied, fine, okay, good enough, that works, alright, decent
+           
+           NEUTRAL/OTHER:
+           - "Concerned": worried, concerned, anxious, nervous, uncertain, what if
+           - "Confused": confused, don't understand, unclear, complicated, lost, how do i
+
+        2. INTENSITY MODIFIERS:
+           - ALL CAPS = +2 intensity points
+           - Multiple !!! = +1.5 intensity points
+           - Intensifiers (really, very, extremely, absolutely, completely, so, super) = +1 intensity point
+           - Profanity = +2 intensity points
+           - Multiple negative words = +1 point per extra word
+
+        3. CONTEXT-AWARE SCORING:
+           - Angry: 1.0-2.0 (lower with more intensity)
+           - Frustrated: 2.0-3.0
+           - Disgusted: 1.5-2.5
+           - Disappointed: 2.5-3.5
+           - Sarcastic: Always 2.0-3.0 range
+           - Concerned: 3.5-4.5
+           - Confused: 4.0-5.0
+           - Neutral: 5.0
+           - Satisfied: 6.0-7.0
+           - Happy: 7.0-8.0
+           - Grateful: 8.0-9.0
+           - Excited: 8.5-10.0
+
+        4. TRAINING EXAMPLES:
+           - "I hate this thing" -> Angry, 1.0, high intensity
+           - "This is absolutely ridiculous" -> Angry, 1.5, high intensity
+           - "Oh great, just what I needed..." -> Frustrated, 2.5, medium intensity
+           - "I guess it's fine whatever" -> Disappointed, 3.0, low intensity
+           - "WTF is wrong with this???" -> Frustrated, 2.0, high intensity
+           - "This sucks so bad" -> Disappointed, 2.5, medium intensity
+           - "Doesn't work at all" -> Frustrated, 2.5, medium intensity
+           - "Really amazing work!" -> Excited, 9.0, high intensity
+           - "Thank you so much" -> Grateful, 8.5, high intensity
+
+        5. EDGE CASES:
+           - Positive words + negative context = Focus on negative context
+           - Questions with frustration = Frustrated, not Confused
+           - Mild complaints = Disappointed, not Angry
+           - Repeated issues = Frustrated with higher intensity
+
+        RESPOND WITH EXACT JSON FORMAT:
+        {
+          "emotion": "exact emotion name from list above",
+          "sentimentScore": precise_number_1_to_10_with_decimals,
+          "intensity": "low/medium/high",
+          "keyIndicators": ["specific words that triggered this emotion"],
+          "suggestion": "specific agent action for this emotion",
+          "priority": "high for negative emotions, medium for neutral, low for positive",
+          "recommendedTone": "empathetic for negative, professional for neutral, enthusiastic for positive",
+          "coachingTips": [
+            "Specific behavioral tip for this emotion",
+            "Tone guidance for this emotional state",
+            "Next step recommendation"
+          ],
+          "phraseExamples": [
+            "Perfect response phrase for this emotion",
+            "Alternative empathetic response",
+            "Follow-up phrase option"
+          ],
+          "warningFlags": [
+            "Escalation risk for this emotion",
+            "Behavioral warning sign"
+          ]
+        }
+
+        BE EXTREMELY CONSISTENT: Same emotional words should ALWAYS produce the same emotion classification and similar sentiment scores.
+      `;
+}
+
+async function loadCustomerContextByPhoneNumber(phoneNumber) {
+  if (!phoneNumber || !isDbConfigured()) {
+    return null;
+  }
+
+  try {
+    const rawContext = await getCustomerContextByPhoneNumber(phoneNumber);
+    return rawContext ? buildCompactCustomerContext(rawContext) : null;
+  } catch (error) {
+    console.error('Customer context lookup failed:', error.message);
+    return null;
+  }
+}
 
 /**
  * Advanced VADER-based sentiment analysis engine
@@ -525,18 +656,23 @@ function analyzeTextSentiment(text) {
  */
 router.post('/analyze-transcript', async (req, res) => {
   try {
-    const { transcript } = req.body;
+    const { transcript, phoneNumber } = req.body;
 
     // Input validation
     if (!transcript) {
       return res.status(400).json({ error: 'Transcript is required' });
     }
 
+    const customerContext = await loadCustomerContextByPhoneNumber(phoneNumber);
+
     // API Key availability check - fallback to local analysis if needed
     if (!process.env.API_KEY || process.env.API_KEY === 'your_google_gemini_api_key_here') {
       console.log('Using fallback sentiment analyzer (no valid API key)');
       const analysis = analyzeTextSentiment(transcript);
-      return res.json(analysis);
+      return res.json({
+        ...analysis,
+        customerContextMatched: Boolean(customerContext),
+      });
     }
 
     try {
@@ -544,7 +680,7 @@ router.post('/analyze-transcript', async (req, res) => {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
 
       // ULTRA-ADVANCED sentiment analysis prompt with extensive training examples
-      const prompt = `
+      const unusedPrompt = `
         You are an expert sentiment analysis AI trained on thousands of customer conversations. Analyze this statement with MAXIMUM ACCURACY.
 
         CUSTOMER STATEMENT: "${transcript}"
@@ -643,6 +779,8 @@ router.post('/analyze-transcript', async (req, res) => {
         BE EXTREMELY CONSISTENT: Same emotional words should ALWAYS produce the same emotion classification and similar sentiment scores.
       `;
 
+      const prompt = buildTranscriptAnalysisPrompt(transcript, customerContext);
+
       // Generate analysis request to Gemini AI
       const result = await model.generateContent(prompt);
       const response = await result.response;
@@ -674,7 +812,8 @@ router.post('/analyze-transcript', async (req, res) => {
           warningFlags: parsed.warningFlags || [
             'Monitor for escalation signals',
             'Watch for tone changes'
-          ]
+          ],
+          customerContextMatched: Boolean(customerContext)
         };
         
         res.json(analysisResult);
@@ -695,6 +834,7 @@ router.post('/analyze-transcript', async (req, res) => {
           'Thank you for bringing this to my attention'
         ];
         fallbackAnalysis.warningFlags = ['Monitor conversation flow', 'Watch for frustration signals'];
+        fallbackAnalysis.customerContextMatched = Boolean(customerContext);
         
         res.json(fallbackAnalysis);
       }
@@ -702,6 +842,7 @@ router.post('/analyze-transcript', async (req, res) => {
       // Gemini API failed - use local fallback analysis
       console.error('Gemini API error, using fallback analysis:', apiError.message);
       const fallbackAnalysis = analyzeTextSentiment(transcript);
+      fallbackAnalysis.customerContextMatched = Boolean(customerContext);
       res.json(fallbackAnalysis);
     }
   } catch (error) {
