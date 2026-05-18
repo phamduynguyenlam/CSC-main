@@ -1,33 +1,10 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
-# SenseAI - CX Analytics Platform 🍵
-
-A comprehensive customer experience analytics platform that combines real-time sentiment analysis, AI-powered insights, and intelligent business intelligence for superior customer understanding.
-
-## Features
-
-- **Real-time Sentiment Analysis** - Live emotion detection using Google Gemini AI
-- **Live Call Analysis** - Real-time audio analysis and agent assistance
-- **Customer Journey Dashboard** - Visual analytics and KPI tracking
-- **Social Media Monitoring** - Cross-platform feedback analysis
-- **AI Assistant** - Intelligent chatbot for CX insights and recommendations
-
-## Architecture
-
-- **Frontend**: React 18 with TypeScript, Vite, and Recharts
-- **Backend**: Node.js with Express and Socket.IO
-- **AI Integration**: Google Gemini API for natural language processing
-
-## 🚀 Quick Start for Collaborators
 
 ### ⚡ Setup (5 minutes)
 
 #### 1. Clone and Install
 ```bash
-git clone https://github.com/quack3rs/HackPrinceton.git
-cd HackPrinceton
+git clone https://github.com/phamduynguyenlam/CSC-main.git
+cd CSC-main
 npm install
 cd backend && npm install
 ```
@@ -112,18 +89,6 @@ cd .. && npm run dev
 - **Backend API**: http://localhost:3001
 - **API Health Check**: http://localhost:3001/api/health
 
-## Features Overview
-
-### 🎯 **Word-Focused Sentiment Analysis**
-- Prioritizes explicit keywords over tone interpretation
-- VADER lexicon integration for social media text analysis
-- Enhanced emotion classification: "I am angry" → correctly detects "Angry"
-- Real-time accuracy with 95%+ precision
-
-### 🔄 **Dual Analysis System**
-- **Primary**: VADER-based word analysis for consistent results
-- **Fallback**: Google Gemini AI for enhanced contextual understanding
-- Automatic graceful degradation ensures 100% uptime
 
 ## API Endpoints
 
@@ -147,6 +112,3 @@ cd .. && npm run dev
 - Google Generative AI for sentiment analysis
 - CORS and security middleware
 
-## License
-
-MIT License
