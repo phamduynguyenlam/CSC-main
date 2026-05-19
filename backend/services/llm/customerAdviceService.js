@@ -27,6 +27,7 @@ function buildSystemPrompt() {
     'You are a senior customer support advisor for call center agents.',
     'Your job is to read the current transcript and the customer context, then suggest the best next response for the agent.',
     'Use customer history only when it materially helps with empathy, prioritization, and resolution.',
+    'Use retrieved call memory only when it is directly relevant to the current transcript.',
     'Do not invent policies, order facts, or promises that are not present in the input.',
     'If the context suggests unresolved repeat issues, explicitly acknowledge that pattern.',
     'Return concise, actionable guidance in Markdown with these sections:',
@@ -37,7 +38,35 @@ function buildSystemPrompt() {
   ].join(' ');
 }
 
-function buildUserPrompt({ transcript, customerContext, conversationHistory = [] }) {
+function trimText(text, maxLength) {
+  if (!text) {
+    return '';
+  }
+
+  const normalized = String(text).trim();
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength)}...`;
+}
+
+function formatRetrievedContext(retrievedContext = []) {
+  if (!Array.isArray(retrievedContext) || retrievedContext.length === 0) {
+    return 'No retrieved call memory.';
+  }
+
+  return retrievedContext.slice(0, 3).map((match, index) => {
+    const reference = match?.metadata?.call_ai_response_id
+      ? `call_ai_response_id=${match.metadata.call_ai_response_id}`
+      : `match_${index + 1}`;
+    const snippet = trimText(match?.document || '', 900);
+
+    return `Match ${index + 1} (${reference}):\n${snippet}`;
+  }).join('\n\n');
+}
+
+function buildUserPrompt({ transcript, customerContext, conversationHistory = [], retrievedContext = [] }) {
   const historyText = conversationHistory.length
     ? conversationHistory
         .slice(-6)
@@ -45,12 +74,17 @@ function buildUserPrompt({ transcript, customerContext, conversationHistory = []
         .join('\n')
     : 'No prior chat history.';
 
+  const retrievedText = formatRetrievedContext(retrievedContext);
+
   return [
     'CURRENT TRANSCRIPT:',
     transcript,
     '',
     'CUSTOMER CONTEXT:',
     JSON.stringify(customerContext, null, 2),
+    '',
+    'RETRIEVED CALL MEMORY (REFERENCE ONLY):',
+    retrievedText,
     '',
     'RECENT CHAT HISTORY:',
     historyText,
@@ -87,7 +121,12 @@ function buildFallbackResponse(customerContext) {
   return lines.join('\n');
 }
 
-export async function generateCustomerAdvice({ transcript, customerContext, conversationHistory = [] }) {
+export async function generateCustomerAdvice({
+  transcript,
+  customerContext,
+  conversationHistory = [],
+  retrievedContext = [],
+}) {
   const openai = getOpenAIClient();
 
   if (!openai) {
@@ -96,6 +135,7 @@ export async function generateCustomerAdvice({ transcript, customerContext, conv
       metadata: {
         model: 'fallback',
         usedFallback: true,
+        ragMatches: Array.isArray(retrievedContext) ? retrievedContext.length : 0,
       },
     };
   }
@@ -111,7 +151,12 @@ export async function generateCustomerAdvice({ transcript, customerContext, conv
       },
       {
         role: 'user',
-        content: buildUserPrompt({ transcript, customerContext, conversationHistory }),
+        content: buildUserPrompt({
+          transcript,
+          customerContext,
+          conversationHistory,
+          retrievedContext,
+        }),
       },
     ],
   });
@@ -122,6 +167,7 @@ export async function generateCustomerAdvice({ transcript, customerContext, conv
       model: completion.model || 'gpt-4o-mini',
       usedFallback: false,
       usage: completion.usage || null,
+      ragMatches: Array.isArray(retrievedContext) ? retrievedContext.length : 0,
     },
   };
 }

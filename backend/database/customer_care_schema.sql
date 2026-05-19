@@ -85,6 +85,30 @@ CREATE TABLE customer_call_logs (
   KEY idx_call_logs_call_time (call_time)
 );
 
+CREATE TABLE call_ai_responses (
+  call_ai_response_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  customer_id BIGINT UNSIGNED NULL,
+  call_log_id BIGINT UNSIGNED NULL,
+  transcript LONGTEXT NOT NULL,
+  response LONGTEXT NOT NULL,
+  model VARCHAR(100) NULL,
+  source VARCHAR(100) NULL,
+  used_fallback TINYINT(1) NOT NULL DEFAULT 0,
+  vector_id VARCHAR(150) NULL,
+  metadata JSON NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_call_ai_customer
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT fk_call_ai_call_log
+    FOREIGN KEY (call_log_id) REFERENCES customer_call_logs(call_log_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  KEY idx_call_ai_customer_id (customer_id),
+  KEY idx_call_ai_call_log_id (call_log_id)
+);
+
 INSERT INTO customers (full_name, phone_number, email, address, notes, previous_calls)
 VALUES
   (
