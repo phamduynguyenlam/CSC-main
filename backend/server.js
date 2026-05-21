@@ -13,6 +13,8 @@ import knotApiRoutes from './routes/knotApi.js';
 import dashboardRoutes from './routes/dashboard.js';
 import openaiRoutes from './routes/openai.js';
 import customerAssistRoutes from './routes/customerAssist.js';
+import insightsRoute from './routes/insights.js';
+
 
 dotenv.config();
 
@@ -56,6 +58,7 @@ app.use('/api/knot', knotApiRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', openaiRoutes);
 app.use('/api/customer-assist', customerAssistRoutes);
+app.use('/api/insights', insightsRoute);
 
 // Health check
 app.get('/api/health', (req, res) => {
