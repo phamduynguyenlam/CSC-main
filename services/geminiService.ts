@@ -112,6 +112,11 @@ export interface CustomerAssistResponse {
         source: string;
         timestamp: string;
         usage?: unknown;
+        rag?: {
+            enabled: boolean;
+            matchCount: number;
+            vectorIdPrefix?: string | null;
+        };
     };
 }
 

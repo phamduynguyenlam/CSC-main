@@ -23,11 +23,21 @@ OPENAI_API_KEY=sk-proj-your-actual-openai-key-here
 # Get from https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/
 API_KEY=AIza-your-actual-gemini-key-here
 
+# Optional (RAG + vector store)
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+CHROMA_URL=http://localhost:8000
+CHROMA_COLLECTION=sentimind_call_memory
+
 # Leave these unchanged
 FRONTEND_URL=http://localhost:5173
 PORT=3001
 NODE_ENV=development
 ```
+
+#### 2b. Database and Vector Store (for call memory + RAG)
+- Configure MySQL connection in `backend/.env` (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+- Run the schema in `backend/database/customer_care_schema.sql`.
+- Start Chroma (example): `chroma run --path ./chroma` or a Docker container on port 8000.
 
 #### 3. Start the Application
 ```bash
