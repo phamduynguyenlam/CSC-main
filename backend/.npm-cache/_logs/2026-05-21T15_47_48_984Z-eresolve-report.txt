@@ -1,0 +1,22 @@
+'Log files:
+C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npm-cache\_logs\2026-05-21T15_47_48_984Z-debug-0.log
+
+# npm resolution error report
+
+While resolving: chromadb@1.10.5
+Found: @google/generative-ai@0.24.1
+node_modules/@google/generative-ai
+  @google/generative-ai@"^0.24.1" from the root project
+
+Could not resolve dependency:
+peerOptional @google/generative-ai@"^0.1.1" from chromadb@1.10.5
+node_modules/chromadb
+  chromadb@"^1.8.1" from the root project
+
+Conflicting peer dependency: @google/generative-ai@0.1.3
+node_modules/@google/generative-ai
+  peerOptional @google/generative-ai@"^0.1.1" from chromadb@1.10.5
+  node_modules/chromadb
+    chromadb@"^1.8.1" from the root project
+
+Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
