@@ -3,8 +3,8 @@
 
 #### 1. Clone và cài đặt
 ```bash
-git clone https://github.com/phamduynguyenlam/CSC-main.git
-cd CSC-main
+git clone https://github.com/phamduynguyenlam/CallPilot.git
+cd CallPilot-main
 npm install
 cd backend && npm install
 ```
@@ -28,16 +28,16 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 CHROMA_URL=http://localhost:8000
 CHROMA_COLLECTION=sentimind_call_memory
 
-# Leave these unchanged
+# Giữ nguyên
 FRONTEND_URL=http://localhost:5173
 PORT=3001
 NODE_ENV=development
 ```
 
-#### 2b. Database and Vector Store (cho RAG + sử dụng lịch sử cuộc gọi)
-- Configure MySQL connection in `backend/.env` (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
-- Run the schema in `backend/database/customer_care_schema.sql`.
-- Start Chroma (example): `chroma run --path ./chroma` or a Docker container on port 8000.
+#### 2b. Database và Vector Store (cho RAG + sử dụng lịch sử cuộc gọi)
+- Cấn hình kết nối MySQL trong`backend/.env` (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+- Chạy schema trong `backend/database/customer_care_schema.sql`.
+- Khởi động Chroma (ví dụ): `chroma run --path ./chroma` or a Docker container on port 8000.
 
 #### 3. Khởi chạy ứng dụng
 ```bash
