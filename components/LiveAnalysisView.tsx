@@ -61,7 +61,7 @@ const fastSentimentAnalysis = (text: string) => {
   // ADVANCED EMOTION DETECTION - Trained for maximum accuracy with edge cases
   const emotionRules = {
     // NEGATIVE EMOTIONS (checked FIRST with sophisticated pattern matching)
-    'Angry': {
+    'Tức giận': {
       triggers: [
         // Direct anger words
         'hate', 'angry', 'furious', 'pissed', 'mad', 'livid', 'outraged', 'disgusted', 'fed up', 'sick of', 'can\'t stand', 'rage', 'enraged',
@@ -78,7 +78,7 @@ const fastSentimentAnalysis = (text: string) => {
       score: 1.0,
       minimumIntensity: 0
     },
-    'Frustrated': {
+    'Bực bội': {
       triggers: [
         // Frustration words
         'frustrated', 'annoying', 'annoyed', 'irritated', 'aggravated', 'exasperated',
@@ -95,7 +95,7 @@ const fastSentimentAnalysis = (text: string) => {
       score: 2.0,
       minimumIntensity: 0
     },
-    'Disgusted': {
+    'Ghê tởm': {
       triggers: [
         'disgusting', 'gross', 'nasty', 'revolting', 'repulsive', 'sick', 'disgusted', 'horrible', 'hideous', 'appalling','blasphemous','blasphemy',
         'vile', 'repugnant', 'nauseating', 'offensive', 'disturbing'
@@ -107,7 +107,7 @@ const fastSentimentAnalysis = (text: string) => {
       score: 1.5,
       minimumIntensity: 0
     },
-    'Disappointed': {
+    'Thất vọng': {
       triggers: [
         'disappointed', 'sucks', 'bad', 'worse', 'terrible', 'horrible', 'disappointing', 'let down', 'expected better', 'useless',
         'pathetic', 'weak', 'lame', 'boring', 'dull', 'meh', 'blah', 'underwhelming'
@@ -121,25 +121,25 @@ const fastSentimentAnalysis = (text: string) => {
     },
     
     // POSITIVE EMOTIONS (checked after negatives, with higher thresholds to avoid false positives)
-    'Excited': {
+    'Hào hứng': {
       triggers: ['excited', 'amazing', 'fantastic', 'incredible', 'awesome', 'can\'t wait', 'love it', 'perfect', 'excellent', 'brilliant', 'outstanding', 'phenomenal','thrilled', 'elated', 'ecstatic'],
       phrases: ['this is amazing', 'can\'t wait', 'so excited', 'absolutely love', 'that\'s awesome', 'it\'s perfect', 'really amazing', 'absolutely fantastic','absolutely thrilled'],
       score: 9,
       minimumIntensity: 1
     },
-    'Happy': {
+    'Vui vẻ': {
       triggers: ['happy', 'pleased', 'delighted', 'great', 'wonderful', 'good', 'nice', 'cool', 'glad', 'cheerful', 'joy', 'blissful', 'content', 'merry'],
       phrases: ['really happy', 'so pleased', 'this is great', 'love this', 'that\'s good', 'very nice', 'pretty good', 'quite happy', 'full of joy', 'feeling great', 'so content'],
       score: 7.5,
       minimumIntensity: 1
     },
-    'Grateful': {
+    'Trân trọng': {
       triggers: ['thank', 'thanks', 'appreciate', 'grateful', 'helpful', 'blessing', 'thankful'],
       phrases: ['thank you', 'really appreciate', 'so helpful', 'much appreciated', 'very grateful', 'thanks so much'],
       score: 8.5,
       minimumIntensity: 1
     },
-    'Satisfied': {
+    'Hài lòng': {
       triggers: ['satisfied', 'fine', 'okay', 'good enough', 'that works', 'alright', 'decent', 'acceptable'],
       phrases: ['that works', 'good enough', 'seems fine', 'i\'m satisfied', 'this is fine', 'not bad', 'pretty decent'],
       score: 6.5,
@@ -147,13 +147,13 @@ const fastSentimentAnalysis = (text: string) => {
     },
     
     // NEUTRAL/OTHER EMOTIONS
-    'Concerned': {
+    'Lo lắng': {
       triggers: ['worried', 'concerned', 'not sure', 'anxious', 'nervous', 'uncertain', 'doubtful'],
       phrases: ['what if', 'worried about', 'not sure if', 'hope this works', 'kind of worried', 'bit concerned'],
       score: 4,
       minimumIntensity: 1
     },
-    'Confused': {
+    'Bối rối': {
       triggers: ['confused', 'don\'t understand', 'unclear', 'complicated', 'lost', 'how do i', 'what does', 'huh', 'what'],
       phrases: ['don\'t understand', 'not sure how', 'what does this mean', 'how do i', 'makes no sense', 'so confused'],
       score: 4.5,
@@ -170,7 +170,7 @@ const fastSentimentAnalysis = (text: string) => {
   };
 
   const lowerText = text.toLowerCase();
-  let emotion = 'Neutral';
+  let emotion = 'Trung tính';
   let sentimentScore = 5;
   
   // ADVANCED PATTERN MATCHING: Check for sarcasm and mixed emotions first
@@ -195,7 +195,7 @@ const fastSentimentAnalysis = (text: string) => {
       const hasNegativeContext = negativeContext.some(context => lowerText.includes(context));
       
       if (hasNegativeContext || lowerText.includes('...') || text.includes('😒') || text.includes('🙄')) {
-        emotion = 'Frustrated';
+        emotion = 'Bực bội';
         sentimentScore = 2.5;
         isSarcastic = true;
         break;
@@ -207,7 +207,7 @@ const fastSentimentAnalysis = (text: string) => {
   if (!isSarcastic) {
     for (const pattern of mixedEmotionPatterns) {
       if (lowerText.includes(pattern)) {
-        emotion = 'Disappointed';
+        emotion = 'Thất vọng';
         sentimentScore = 3.0;
         break;
       }
@@ -215,7 +215,7 @@ const fastSentimentAnalysis = (text: string) => {
   }
   
   // If no sarcasm/mixed emotions, proceed with standard detection
-  if (emotion === 'Neutral') {
+  if (emotion === 'Trung tính') {
     // ENHANCED DETECTION: Check each emotion in order (negative first)
     for (const [emotionName, rules] of Object.entries(emotionRules)) {
       let found = false;
@@ -300,12 +300,12 @@ const fastSentimentAnalysis = (text: string) => {
  */
 const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) => {
   const baseCoaching = {
-    'Angry': {
+    'Tức giận': {
       coachingTips: [
-        '🚨 IMMEDIATE DE-ESCALATION: Acknowledge anger immediately',
-        '🔊 Voice: Lower tone, slow pace, calm energy',
-        '⚠️ AVOID: Explanations, excuses, or defensive responses',
-        '👂 PRIORITY: Listen, validate feelings, take ownership'
+        '🚨 GIẢM CĂNG THẲNG NGAY LẬP TỨC: Ghi nhận sự tức giận ngay lập tức',
+        '🔊 Giọng nói: Hạ giọng, nói chậm & bình tĩnh',
+        '⚠️ TRÁNH: Giải thích, bào chữa hoặc phản ứng phòng thủ',
+        '👂 ƯU TIÊN: Lắng nghe, thấu hiểu cảm xúc, chịu trách nhiệm'
       ],
       phraseExamples: [
         'I completely understand why you\'re angry - this is unacceptable',
@@ -314,17 +314,17 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Let me make this right immediately - what would you like me to do?'
       ],
       warningFlags: [
-        '🔴 CRITICAL: High escalation risk - handle with extreme care',
-        '⛔ Do NOT use "I understand" without action',
-        '🚫 Avoid "company policy" or "that\'s not possible"'
+        '🔴 CẢNH BÁO: Nguy cơ leo thang - cần xử lý hết sức cẩn thận',
+        '⛔ KHÔNG nói mình hiểu khách hàng mà không kèm theo hành động cụ thể',
+        '🚫 Tránh nhắc đến "chính sách công ty" hoặc phủ nhận ý kiến của khách hàng'
       ]
     },
-    'Frustrated': {
+    'Bực bội': {
       coachingTips: [
-        '🎯 Focus on SOLUTIONS, not problems',
-        '📋 Provide specific, actionable next steps',
-        '🤝 Show partnership: "Let\'s solve this together"',
-        '⏰ Set clear expectations and timelines'
+        '🎯 Tập trung vào GIẢI PHÁP thay vì vấn đề',
+        '📋 Đề xuất các phương án tiếp theo cụ thể và khả thi',
+        '🤝 Thể hiện tinh thần hợp tác, cùng nhau giải quyết vấn đề',
+        '⏰ Đặt ra những kỳ vọng và thời hạn rõ ràng'
       ],
       phraseExamples: [
         'I can see this is really frustrating - here\'s exactly what we\'ll do',
@@ -333,17 +333,17 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'I\'m committed to solving this today - here\'s our plan'
       ],
       warningFlags: [
-        '⚡ Watch for escalation signals',
-        '⏳ Customer patience is limited - act quickly',
-        '🔄 May need multiple solution attempts'
+        '⚡ Phát hiện dấu hiệu tiêu cực từ phía khách hàng',
+        '⏳ Sự kiên nhẫn của khách hàng có hạn - hãy làm việc nhanh gọn.',
+        '🔄 Có thể cần đề xuất nhiều giải pháp'
       ]
     },
-    'Disgusted': {
+    'Ghê tởm': {
       coachingTips: [
-        '🧼 Acknowledge the severity of their reaction',
-        '🔄 Focus on immediate remediation and prevention',
-        '💯 Show you take their concern very seriously',
-        '📞 Consider escalating to supervisor if needed'
+        '🧼 Thừa nhận mức độ nghiêm trọng của cảm giác của khách hàng.',
+        '🔄 Tập trung khắc phục và phòng ngừa ngay lập tức',
+        '💯 Thể hiện rằng bạn rất coi trọng nỗi quan ngại của họ',
+        '📞 Cân nhắc báo cáo cho cấp trên nếu cần thiết'
       ],
       phraseExamples: [
         'That\'s completely unacceptable, and I apologize profusely',
@@ -352,17 +352,17 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'This is not the experience we want for you - ever'
       ],
       warningFlags: [
-        '🚨 Severe negative reaction - handle delicately',
-        '📈 High risk of escalation to social media/complaints',
-        '🔍 May need root cause investigation'
+        '🚨 Phản ứng tiêu cực nghiêm trọng - cần xử lý cẩn thận',
+        '📈 Nguy cơ cao leo thang thành khiếu nại/khủng hoảng truyền thông',
+        '🔍 Cần điều tra nguyên nhân gốc rễ'
       ]
     },
-    'Disappointed': {
+    'Thất vọng': {
       coachingTips: [
-        '💔 Acknowledge their unmet expectations',
-        '🎁 Consider offering something extra to rebuild trust',
-        '📚 Learn what they expected vs. what they got',
-        '🔮 Focus on exceeding expectations next time'
+        '💔 Thừa nhận những kỳ vọng chưa được đáp ứng của họ',
+        '🎁 Cân nhắc việc cung cấp thêm quyền lợi để xây dựng lại lòng tin',
+        '📚 Tìm hiểu xem họ mong đợi điều gì so với những gì họ nhận được',
+        '🔮 Làm nhiều hơn những gì họ mong đợi vào lần sau'
       ],
       phraseExamples: [
         'I can hear the disappointment in your voice, and I want to make this better',
@@ -371,16 +371,16 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'I want to turn this disappointment into a great experience'
       ],
       warningFlags: [
-        '📉 Trust may be damaged - focus on rebuilding',
-        '🤔 May need to understand their original expectations'
+        '📉 Niềm tin có thể bị tổn hại - Tập trung vào việc xây dựng lại nó',
+        '🤔 Cần hiểu những kỳ vọng ban đầu của họ'
       ]
     },
-    'Confused': {
+    'Bối rối': {
       coachingTips: [
-        '🧩 Break complex information into simple, clear steps',
-        '🗣️ Use everyday language, avoid jargon completely',
-        '✅ Check understanding after each step',
-        '🎨 Use analogies or examples they can relate to'
+        '🧩 Chia nhỏ thông tin phức tạp thành các bước đơn giản, rõ ràng',
+        '🗣️ Sử dụng ngôn ngữ thông dụng, tránh dùng thuật ngữ chuyên ngành',
+        '✅ Kiểm tra mức độ hiểu của khách hàng sau mỗi bước',
+        '🎨 Sử dụng các phép so sánh hoặc ví dụ mà họ có thể hiểu'
       ],
       phraseExamples: [
         'Let me break this down into simple steps you can follow',
@@ -389,17 +389,17 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Does that make sense, or would you like me to explain it differently?'
       ],
       warningFlags: [
-        '🧠 Don\'t overload with information',
-        '❓ Ask "does that make sense?" frequently',
-        '👥 May need visual aids or demonstrations'
+        '🧠 Đừng cung cấp quá nhiều thông tin',
+        '❓ Thường xuyên hỏi khách hàng đã nắm thông tin chưa',
+        '👥 Có thể cần đến các phương tiện trực quan hóa thông tin'
       ]
     },
-    'Excited': {
+    'Hào hứng': {
       coachingTips: [
-        '🎉 Match their energy and enthusiasm',
-        '🚀 Build on their excitement with additional value',
-        '📈 Perfect time for upselling or cross-selling',
-        '💖 Create memorable, shareable moments'
+        '🎉 Đáp lại năng lượng và sự nhiệt tình của họ',
+        '🚀 Tận dụng sự hào hứng của họ bằng những quyền lợi bổ sung',
+        '📈 Thời điểm hoàn hảo để chốt thêm đơn hoặc mua bán chéo',
+        '💖 Tạo những khoảnh khắc đáng nhớ và dễ chia sẻ'
       ],
       phraseExamples: [
         'I love your enthusiasm! This is going to be amazing for you',
@@ -408,16 +408,16 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Your excitement is contagious - thank you for making my day!'
       ],
       warningFlags: [
-        '💎 Golden opportunity - don\'t waste it',
-        '⚖️ Don\'t oversell and ruin the moment'
+        '💎 Cơ hội vàng - đừng lãng phí nó',
+        '⚖️ Đừng quảng cáo quá mức và làm hỏng cơ hội'
       ]
     },
-    'Happy': {
+    'Vui vẻ': {
       coachingTips: [
-        '😊 Reinforce their positive feelings',
-        '🎯 Ask about other needs while they\'re positive',
-        '⭐ Request feedback or reviews',
-        '🤝 Strengthen the relationship'
+        '😊 Củng cố những cảm xúc tích cực của khách hàng',
+        '🎯 Hỏi về những nhu cầu khác của khách hàng khi cuộc hội thoại đang tích cực',
+        '⭐ Yêu cầu phản hồi hoặc đánh giá',
+        '🤝 Tăng cường mối quan hệ khánh hàng với doanh nghiệp'
       ],
       phraseExamples: [
         'I\'m so glad you\'re happy with this - it makes my day!',
@@ -426,16 +426,16 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Would you mind sharing your positive experience with others?'
       ],
       warningFlags: [
-        '📝 Great time to ask for reviews',
-        '🛍️ Opportunity for additional sales'
+        '📝 Thời điểm tuyệt vời để xin phản hồi về sản phẩm',
+        '🛍️ Cơ hội để chốt thêm đơn'
       ]
     },
-    'Grateful': {
+    'Trân trọng': {
       coachingTips: [
-        '🙏 Accept thanks graciously and humbly',
-        '🔗 Reinforce ongoing support availability',
-        '💝 Make them feel valued as a customer',
-        '🌟 Build long-term loyalty'
+        '🙏 Nhận lời cảm ơn của khách một cách chân thành và khiêm tốn',
+        '🔗 Khẳng định sẵn sàng hỗ trợ liên tục',
+        '💝 Khiến khách hàng cảm thấy được trân trọng',
+        '🌟 Xây dựng sự trung thành với thương hiệu'
       ],
       phraseExamples: [
         'You\'re so welcome - helping you was truly my pleasure',
@@ -444,16 +444,16 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Customers like you make this job rewarding'
       ],
       warningFlags: [
-        '💯 Perfect relationship-building moment',
-        '🔄 Encourage them to come back'
+        '💯 Thời điểm hoàn hảo để xây dựng mối quan hệ',
+        '🔄 Khuyến khích khách hàng tiếp tục ủng hộ'
       ]
     },
-    'Concerned': {
+    'Lo lắng': {
       coachingTips: [
-        '🛡️ Address their worries with specific reassurances',
-        '📋 Provide detailed information to ease concerns',
-        '🤝 Offer ongoing support and check-ins',
-        '📞 Give them direct contact for future concerns'
+        '🛡️ Xoa dịu sự lo lắng của họ bằng những lời trấn an cụ thể',
+        '📋 Cung cấp thông tin chi tiết để giải tỏa các mối bận tâm',
+        '🤝 Thường xuyên hỗ trợ và hỏi thăm qua những cuộc gọi',
+        '📞 Cung cấp cho khách kênh liên lạc trực tiếp để được giải đáp thắc mắc trong tương lai'
       ],
       phraseExamples: [
         'I understand your concerns, and here\'s how we address them...',
@@ -462,16 +462,15 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'I\'m here to support you every step of the way'
       ],
       warningFlags: [
-        '🔍 May need detailed explanations',
-        '📱 Consider follow-up contact'
+        '🔍 Có thể cần giải thích chi tiết',
+        '📱 Cân nhắc việc chủ động liên lạc lại với khách hàng'
       ]
     },
-    'Satisfied': {
+    'Hài lòng': {
       coachingTips: [
-        '✅ Confirm their satisfaction is genuine',
-        '📈 Look for opportunities to exceed expectations',
-        '🎁 Consider small gestures to delight them',
-        '🔄 Ensure they know about future support'
+        '📈 Tìm kiếm cơ hội để vượt trên cả kỳ vọng của khách hàng',
+        '🎁 Chiều lòng khách bằng những cử chỉ nhỏ.',
+        '🔄 Đảm bảo rằng khách hàng biết mình sẽ được hỗ trợ cả trong tương lai'
       ],
       phraseExamples: [
         'I\'m glad this works for you - is there anything else I can do?',
@@ -480,16 +479,16 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'I\'m here if you have any questions down the road'
       ],
       warningFlags: [
-        '⬆️ Room to move from satisfied to delighted',
-        '🎯 Opportunity for additional value'
+        '⬆️ Cơ hội để chuyển từ hài lòng sang vượt mong đợi',
+        '🎯 Cơ hội mang lại giá trị gia tăng'
       ]
     },
-    'Neutral': {
+    'Trung tính': {
       coachingTips: [
-        '🎭 Inject positive energy to elevate the interaction',
-        '❓ Ask engaging questions to understand needs',
-        '💡 Provide helpful information proactively',
-        '🌟 Create a memorable, positive experience'
+        '🎭 Tỏ thái độ tích cực để nâng tầm trải nghiệm tương tác',
+        '❓ Đặt các câu hỏi mang tính gợi mở để thấu hiểu nhu cầu',
+        '💡 Chủ động cung cấp các thông tin hữu ích',
+        '🌟 Tạo ra một trải nghiệm tích cực và đáng nhớ'
       ],
       phraseExamples: [
         'How can I make your day a little better?',
@@ -498,13 +497,13 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         'Let me see what options we have for you'
       ],
       warningFlags: [
-        '⚡ Opportunity to create positive momentum',
-        '🎯 Can guide conversation toward specific goals'
+        '⚡ Cơ hội để tạo đà phát triển tích cực',
+        '🎯 Dẫn dắt cuộc hội thoại theo hướng cụ thể'
       ]
     }
   };
 
-  return baseCoaching[emotion] || baseCoaching['Neutral'];
+  return baseCoaching[emotion as keyof typeof baseCoaching] || baseCoaching['Trung tính'];
 };
 
 /**
@@ -665,23 +664,23 @@ const LiveAnalysisView: React.FC = () => {
     isRecording: false,           // Recording state management
     audioLevel: 0,               // Real-time audio level visualization
     sentiment: 7.5,              // Optimistic default (slightly positive)
-    emotion: 'Listening...',     // Shows listening state during warmup
+    emotion: 'Unknown',    // Shows listening state during warmup
     transcript: [],              // Complete conversation history
-    currentSuggestion: 'Click "Start Live Analysis" to begin monitoring',
+    currentSuggestion: 'Chọn "Bắt đầu ghi âm" để khởi động',
     isAnalyzing: false,          // Prevents concurrent API calls
     error: null,                 // Error state management
-    intensity: 'medium',         // Emotion intensity level
+    intensity: 'Trung bình',     // Emotion intensity level
     keyIndicators: [],           // Detected sentiment keywords
-    priority: 'medium',          // Urgency assessment
-    recommendedTone: 'professional', // Suggested response approach
+    priority: 'Trung bình',      // Urgency assessment
+    recommendedTone: 'Chuyên nghiệp', // Suggested response approach
     lastProcessedText: '',       // Cache key for performance optimization
     analysisCache: new Map(),    // Performance cache (reduces API calls by 70%)
     warmupMode: true,           // NEW: Warmup period flag
     recordingStartTime: null,   // NEW: Track when recording started
     coachingTips: [              // Initial coaching suggestions
-      'System is listening and calibrating...',
-      'Detailed analysis will begin in 15-20 seconds',
-      'Continue speaking naturally'
+      'Hệ thống đang lắng nghe và hiệu chuẩn...',
+      'Quá trình phân tích chi tiết sẽ bắt đầu trong 15-20s',
+      'Tiếp tục nói một cách tự nhiên'
     ],
     phraseExamples: [            // Default phrase examples during warmup
       'Please continue the conversation...',
@@ -689,8 +688,8 @@ const LiveAnalysisView: React.FC = () => {
       'Detailed insights coming soon...'
     ],
     warningFlags: [              // Initial warning flags
-      'Warmup phase - detailed analysis pending',
-      'Audio calibration in progress'
+      'Giai đoạn khởi động - đang chờ phân tích chi tiết',
+      'Quá trình hiệu chuẩn âm thanh đang diễn ra'
     ]
   });
   
@@ -723,31 +722,31 @@ const LiveAnalysisView: React.FC = () => {
   const activeCalls = [
     {
       id: 'live-analysis',
-      name: 'Live Audio Analysis',
+      name: 'Phân tích trực tiếp',
       duration: 'Real-time',
-      sentiment: audioState.emotion.toLowerCase(),
-      risk: audioState.sentiment < 4 ? 'high' : audioState.sentiment < 7 ? 'medium' : 'low'
+      sentiment: audioState.emotion,
+      risk: audioState.sentiment < 4 ? 'Cao' : audioState.sentiment < 7 ? 'Trung bình' : 'Thấp'
     },
     {
-      id: 'sarah',
-      name: 'Sarah Johnson',
+      id: 'nmtuan',
+      name: 'Nguyễn Minh Tuấn',
       duration: '5:24',
-      sentiment: 'positive',
-      risk: 'low'
+      sentiment: 'Thất vọng',
+      risk: 'Cao'
     },
     {
-      id: 'mike',
-      name: 'Mike Chen',
+      id: 'ndluong',
+      name: 'Nguyễn Đức Lương',
       duration: '12:03',
-      sentiment: 'neutral',
-      risk: 'medium'
+      sentiment: 'Trung tính',
+      risk: 'Trung bình'
     },
     {
-      id: 'emma',
-      name: 'Emma Wilson',
+      id: 'htphuong',
+      name: 'Hoàng Thị Phương',
       duration: '3:45',
-      sentiment: 'negative',
-      risk: 'high'
+      sentiment: 'Tiêu cực',
+      risk: 'Cao'
     }
   ];
 
@@ -762,9 +761,18 @@ const LiveAnalysisView: React.FC = () => {
    */
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
-      case 'negative': return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
-      default: return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+      case 'Tích cực': 
+      case 'Hài lòng': 
+      case 'Trân trọng': 
+      case 'Hào hứng': 
+      case 'Vui vẻ': return 'text-green-500 dark:text-green-400 bg-[#52b788]/10 dark:bg-[#52b788]/30';
+  
+      case 'Tiêu cực':
+      case 'Thất vọng':
+      case 'Ghê tởm':
+      case 'Bực bội': return 'text-red-500 dark:text-red-400 bg-[#e63946]/10 dark:bg-[#e63946]/30';
+
+      default: return 'text-orange-500 dark:text-orange-400 bg-[#f4a261]/10 dark:bg-[#f4a261]/30';
     }
   };
 
@@ -779,9 +787,9 @@ const LiveAnalysisView: React.FC = () => {
    */
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'low': return 'text-green-600 dark:text-green-400';
-      case 'high': return 'text-red-600 dark:text-red-400';
-      default: return 'text-yellow-600 dark:text-yellow-400';
+      case 'Thấp': return 'text-green-600 dark:text-green-400';
+      case 'Cao': return 'text-red-500 dark:text-green-400';
+      default: return 'text-orange-500';
     }
   };
 
@@ -890,7 +898,7 @@ const LiveAnalysisView: React.FC = () => {
             ...prev,
             emotion: quickAnalysis.emotion,
             sentiment: quickAnalysis.sentimentScore,
-            currentSuggestion: `Live analysis: ${quickAnalysis.emotion} detected (${quickAnalysis.sentimentScore.toFixed(1)}/10) - Syncing...`,
+            currentSuggestion: `Cảm xúc: ${quickAnalysis.emotion} (Sentiment Score: ${quickAnalysis.sentimentScore.toFixed(1)}/10) - Đang cập nhật...`,
             coachingTips: localCoaching.coachingTips,
             phraseExamples: localCoaching.phraseExamples,
             warningFlags: localCoaching.warningFlags,
@@ -919,7 +927,7 @@ const LiveAnalysisView: React.FC = () => {
             emotion: quickAnalysis.emotion,
             sentiment: quickAnalysis.sentimentScore,
             transcript: [...prev.transcript.slice(-9), newEntry],
-            currentSuggestion: `Processing: ${quickAnalysis.emotion} (${quickAnalysis.sentimentScore.toFixed(1)}/10) - Getting detailed analysis...`
+            currentSuggestion: `Cảm xúc: ${quickAnalysis.emotion} (Sentimental Score: ${quickAnalysis.sentimentScore.toFixed(1)}/10) - Đang phân tích chi tiết...`
           }));
 
           // Set for debounced API call
@@ -928,11 +936,11 @@ const LiveAnalysisView: React.FC = () => {
       };
 
       recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
+        console.error('Lỗi nhận diện giọng nói:', event.error);
         if (event.error !== 'no-speech') {
           setAudioState(prev => ({
             ...prev,
-            error: `Speech recognition error: ${event.error}`,
+            error: `Lỗi nhận diện giọng nói: ${event.error}`,
             isAnalyzing: false
           }));
         }
@@ -950,8 +958,8 @@ const LiveAnalysisView: React.FC = () => {
       if (elapsedTime < 15000) { // Less than 15 seconds
         setAudioState(prev => ({
           ...prev,
-          currentSuggestion: 'System is listening and calibrating...',
-          emotion: 'Listening...'
+          currentSuggestion: 'Hệ thống đang lắng nghe và hiệu chuẩn...',
+          emotion: 'Đang nghe...'
         }));
         return;
       }
@@ -967,7 +975,7 @@ const LiveAnalysisView: React.FC = () => {
         sentiment: cached.sentimentScore || prev.sentiment,
         intensity: cached.intensity || prev.intensity,
         keyIndicators: cached.keyIndicators || [],
-        priority: cached.priority || 'medium',
+        priority: cached.priority || 'Trung bình',
         recommendedTone: cached.recommendedTone || prev.recommendedTone,
         coachingTips: cached.coachingTips || prev.coachingTips,
         phraseExamples: cached.phraseExamples || prev.phraseExamples,
@@ -1024,31 +1032,31 @@ const LiveAnalysisView: React.FC = () => {
       newCache.set(text, analysis);
       if (newCache.size > 50) { // Limit cache size
         const firstKey = newCache.keys().next().value;
-        newCache.delete(firstKey);
+        newCache.delete(firstKey!);
       }
-      console.log ('Using analysis:', text);
+      console.log ('Đang dùng phân tích:', text);
       setAudioState(prev => ({
         ...prev,
         emotion: analysis.emotion,
         currentSuggestion: `✅ ${analysis.suggestion}`, // Add checkmark to show completed analysis
         sentiment: analysis.sentimentScore || prev.sentiment,
-        intensity: analysis.intensity || 'medium',
+        intensity: analysis.intensity || 'Trung bình',
         keyIndicators: analysis.keyIndicators || [],
-        priority: analysis.priority || 'medium',
-        recommendedTone: analysis.recommendedTone || 'professional',
+        priority: analysis.priority || 'Trung bình',
+        recommendedTone: analysis.recommendedTone || 'Chuyên nghiệp',
         // coachingTips: analysis.coachingTips && localCoaching.coachingTips,
         // phraseExamples: analysis.phraseExamples && localCoaching.phraseExamples,
         // warningFlags: analysis.warningFlags && localCoaching.warningFlags,
-        coachingTips: analysis.coachingTips,
-        phraseExamples: analysis.phraseExamples,
-        warningFlags: analysis.warningFlags,
+        coachingTips: analysis.coachingTips ?? [],
+        phraseExamples: analysis.phraseExamples ?? [],
+        warningFlags: analysis.warningFlags ?? [],
         isAnalyzing: false,
         analysisCache: newCache,
         lastProcessedText: text
       }));
     } catch (error) {
-      console.error('Analysis error:', error);
-      console.log ('Falling back to local analysis for:', text);
+      console.error('Lỗi phân tích:', error);
+      console.log ('Chuyển sang phân tích cục bộ cho:', text);
       
       // Use local sentiment analysis as fallback when API fails
       const quickAnalysis = fastSentimentAnalysis(text);
@@ -1059,7 +1067,7 @@ const LiveAnalysisView: React.FC = () => {
         isAnalyzing: false,
         emotion: quickAnalysis.emotion,
         sentiment: quickAnalysis.sentimentScore,
-        currentSuggestion: `📡 Local analysis: ${quickAnalysis.emotion} - API reconnecting...`,
+        currentSuggestion: `📡 Phân tích cục bộ: ${quickAnalysis.emotion} - Kết nối lại API...`,
         coachingTips: localCoaching.coachingTips,
         phraseExamples: localCoaching.phraseExamples,
         warningFlags: localCoaching.warningFlags,
@@ -1111,7 +1119,7 @@ const LiveAnalysisView: React.FC = () => {
         isRecording: true,
         warmupMode: true,
         recordingStartTime: startTime,
-        currentSuggestion: 'Listening... Speak to see real-time analysis',
+        currentSuggestion: 'Đang nghe... Hãy nói để tiến hành phân tích theo thời gian thực',
         transcript: []
       }));
 
@@ -1129,15 +1137,15 @@ const LiveAnalysisView: React.FC = () => {
         setAudioState(prev => ({ 
           ...prev, 
           warmupMode: false,
-          currentSuggestion: 'Ready for detailed analysis'
+          currentSuggestion: 'Sẵn sàng phân tích chi tiết'
         }));
       }, 17500); // 17.5 seconds as middle of 15-20 range
 
     } catch (error) {
-      console.error('Error starting recording:', error);
+      console.error('Lỗi ghi âm:', error);
       setAudioState(prev => ({ 
         ...prev, 
-        error: 'Could not access microphone. Please check permissions.',
+        error: 'Không thể truy cập micro. Vui lòng kiểm tra lại quyền truy cập.',
         isRecording: false
       }));
     }
@@ -1173,7 +1181,7 @@ const LiveAnalysisView: React.FC = () => {
       isAnalyzing: false,
       warmupMode: false,
       recordingStartTime: null,
-      currentSuggestion: 'Analysis complete. Click "Start Live Analysis" to continue monitoring'
+      currentSuggestion: 'Phân tích hoàn tất! Nhấn "Bắt đầu ghi âm" để thử lại'
     }));
   };
 
@@ -1198,48 +1206,48 @@ const LiveAnalysisView: React.FC = () => {
       };
     }
     
-    if (callId === 'sarah') {
+    if (callId === 'nmtuan') {
       return {
-        name: 'Sarah Johnson',
+        name: 'Nguyễn Minh Tuấn',
         phoneNumber: '0912345678',
-        status: 'Satisfied',
+        status: 'Bực bội',
         transcript: [
           { speaker: 'Customer' as const, text: "I've been having issues with my order...", timestamp: '10:15:32' },
           { speaker: 'Agent' as const, text: "I understand your concern. Let me check that for you.", timestamp: '10:15:45' },
           { speaker: 'Customer' as const, text: "This is the third time I'm calling about this.", timestamp: '10:15:58' }
         ],
-        suggestion: "Customer mentions this is a repeat issue. Acknowledge their frustration and offer immediate escalation to prevent churn.",
-        emotion: 'Frustrated',
+        suggestion: "Khách hàng phản hồi rằng đây là một sự cố lặp lại nhiều lần. Hãy đồng cảm với sự thất vọng của họ và đề xuất chuyển tiếp vụ việc ngay lập tức lên cấp trên để xử lý nhanh nhằm tránh mất khách.",
+        emotion: 'Bực bội',
         sentiment: 4.2
       };
     }
-    if (callId === 'mike') {
+    if (callId === 'ndluong') {
       return {
-        name: 'Mike Chen',
+        name: 'Nguyễn Đức Lương',
         phoneNumber: '0933456789',
-        status: 'Concerned',
+        status: 'Lo lắng',
         transcript: [
           { speaker: 'Customer' as const, text: "I am calling again because my refund is still pending.", timestamp: '11:02:13' },
           { speaker: 'Agent' as const, text: "Let me review your account and recent order history.", timestamp: '11:02:28' }
         ],
-        emotion: 'Concerned',
+        emotion: 'Lo lắng',
         sentiment: 4.2,
-        suggestion: "Customer mentions a repeat unresolved refund. Acknowledge prior friction and verify refund status before promising a timeline.",
+        suggestion: "Khách hàng phản hồi về một khoản hoàn tiền bị lặp lại nhiều lần mà chưa được giải quyết. Hãy ghi nhận những trải nghiệm không tốt trước đó của họ, đồng thời kiểm tra lại chính xác trạng thái hoàn tiền trên hệ thống trước khi cam kết về một mốc thời gian xử lý cụ thể.",
         isLive: false
       };
     }
-    if (callId === 'emma') {
+    if (callId === 'htphuong') {
       return {
-        name: 'Emma Wilson',
+        name: 'Hoàng Thị Phương',
         phoneNumber: '0944567890',
-        status: 'Frustrated',
+        status: 'Bực bội',
         transcript: [
           { speaker: 'Customer' as const, text: "This is the second late delivery this month and I want compensation.", timestamp: '09:41:08' },
           { speaker: 'Agent' as const, text: "I understand. Let me check the previous cases linked to your account.", timestamp: '09:41:26' }
         ],
-        emotion: 'Frustrated',
+        emotion: 'Bực bội',
         sentiment: 2.8,
-        suggestion: "Repeat delivery failure should be treated as high priority. Acknowledge the pattern and offer a clear next step immediately.",
+        suggestion: "Việc giao hàng thất bại lặp đi lặp lại cần được ưu tiên xử lý. Hãy nhận biết quy luật này và đưa ra hướng giải quyết rõ ràng ngay lập tức.",
         isLive: false
       };
     }
@@ -1251,19 +1259,18 @@ const LiveAnalysisView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Active Calls */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Live Audio Analysis & Active Calls</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Cuộc gọi gần đây</h2>
         </div>
-        
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {activeCalls.map((call) => (
             <div 
               key={call.id} 
               className={`p-4 cursor-pointer transition-colors ${
                 selectedCall === call.id 
-                  ? 'bg-blue-50 dark:bg-blue-900/20' 
-                  : 'hover:bg-gray-50 dark:hover:bg-slate-700'
+                  ? 'bg-blue-50 dark:bg-slate-700' 
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-600'
               }`}
               onClick={() => setSelectedCall(call.id)}
             >
@@ -1271,14 +1278,14 @@ const LiveAnalysisView: React.FC = () => {
                 <div className="flex items-center space-x-4">
                   {call.id === 'live-analysis' ? (
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      audioState.isRecording ? 'bg-red-100 dark:bg-red-900/30' : 'bg-gray-300 dark:bg-gray-600'
+                      audioState.isRecording ? 'bg-[#e63946]/10 dark:bg-[#e63946]/30' : 'bg-slate-300 dark:bg-slate-700'
                     }`}>
-                      <svg className={`w-5 h-5 ${audioState.isRecording ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-5 h-5 ${audioState.isRecording ? 'text-[#e63946] dark:text-[#e63946]' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center">
                       <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                         {call.name.split(' ').map(n => n[0]).join('')}
                       </span>
@@ -1295,7 +1302,7 @@ const LiveAnalysisView: React.FC = () => {
                     {call.sentiment}
                   </span>
                   <span className={`text-sm font-medium ${getRiskColor(call.risk)}`}>
-                    Risk: {call.risk}
+                    Rủi ro: {call.risk}
                   </span>
                 </div>
               </div>
@@ -1308,51 +1315,56 @@ const LiveAnalysisView: React.FC = () => {
       {selectedCallDetails && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Live Audio Analysis or Call Transcript */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {selectedCallDetails.isLive ? 'Live Audio Analysis' : `Call with ${selectedCallDetails.name}`}
+                {selectedCallDetails.isLive ? 'Phân tích trực tiếp  ' : `Cuộc gọi với ${selectedCallDetails.name}  `}
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 ${
+                  selectedCallDetails.isLive 
+                    ? (audioState.isRecording ? 'bg-[#e63946]/10 dark:bg-[#e63946]/20 text-[#e63946] dark:text-[#e63946]' : 'bg-slate-50 dark:bg-slate-900/20 text-gray-600 dark:text-gray-400')
+                    : (getSentimentColor(selectedCallDetails.status))
+                  }`}>
+                  {selectedCallDetails.status}
+                </span>
               </h3>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 ${
-                selectedCallDetails.isLive 
-                  ? (audioState.isRecording ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400')
-                  : 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
-              }`}>
-                {selectedCallDetails.status}
-              </span>
+
             </div>
             
             <div className="p-6">
               {/* Live Analysis Controls */}
               {selectedCallDetails.isLive && (
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4 flex flex-col items-center">
                     <button
                       onClick={audioState.isRecording ? stopRecording : startRecording}
-                      className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                      className={`inline-flex items-center space-x-2 px-6 py-3 font-semibold text-white rounded-lg transition-colors ${
                         audioState.isRecording 
-                          ? 'bg-red-600 hover:bg-red-700 text-white' 
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          ? 'bg-red-500 hover:bg-red-700' 
+                          : 'bg-blue-500 hover:bg-blue-700'
                       }`}
                       disabled={audioState.isAnalyzing}
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        {audioState.isRecording ? (
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        ) : (
+                      {audioState.isRecording ? (
+                        /* Stop icon — filled square */
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="5" y="5" width="14" height="14" rx="2" />
+                        </svg>
+                      ) : (
+                        /* Mic icon */
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        )}
-                      </svg>
-                      <span>{audioState.isRecording ? 'Stop Analysis' : 'Start Live Analysis'}</span>
+                        </svg>
+                      )}
+                      <span>{audioState.isRecording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}</span>
                     </button>
 
                     {/* Audio Level Visualization */}
                     {audioState.isRecording && (
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Audio Level:</span>
-                        <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="mt-4 flex items-center space-x-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Mức âm thanh:</span>
+                        <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-green-500 transition-all duration-100"
+                            className="h-full bg-[#52b788] transition-all duration-100"
                             style={{ width: `${audioState.audioLevel * 100}%` }}
                           />
                         </div>
@@ -1363,52 +1375,51 @@ const LiveAnalysisView: React.FC = () => {
                   {/* Current Emotion and Sentiment with Real-time Indicators */}
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Emotion</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Cảm xúc hiện tại</span>
                       <div className="flex items-center space-x-2">
                         <div className="text-lg font-semibold text-gray-900 dark:text-white">{audioState.emotion}</div>
                         {audioState.warmupMode && (
                           <div className="flex items-center space-x-1">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                            <span className="text-xs text-orange-600 dark:text-orange-400">Calibrating</span>
+                            <div className="w-2 h-2 bg-[#f4a261] rounded-full animate-pulse"></div>
                           </div>
                         )}
                         {audioState.isAnalyzing && !audioState.warmupMode && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                          <div className="w-2 h-2 bg-[#0077b6] rounded-full animate-pulse"></div>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">{audioState.intensity} intensity</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Cường độ: {audioState.intensity}</div>
                     </div>
                     <div>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sentiment Score</span>
                       <div className="text-lg font-semibold text-gray-900 dark:text-white">
                         {audioState.sentiment.toFixed(1)}/10
                       </div>
-                      <div className={`text-xs font-medium ${audioState.priority === 'high' ? 'text-red-600' : audioState.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'}`}>
-                        {audioState.priority} priority
+                      <div className={`text-xs font-medium ${audioState.priority === 'Cao' ? 'text-[#e63946]' : audioState.priority === 'Trung bình' ? 'text-[#f4a261]' : 'text-[#52b788]'}`}>
+                        Ưu tiên: {audioState.priority}
                       </div>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Analysis Mode</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300 font-semibold">Chế độ phân tích</span>
                       <div className="text-sm text-gray-900 dark:text-white">
                         {audioState.isAnalyzing ? (
-                          <span className="text-blue-600 dark:text-blue-400">🔄 Processing...</span>
+                          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Đang xử lý</span>
                         ) : (
-                          <span className="text-green-600 dark:text-green-400">⚡ Real-time</span>
+                          <span className="text-lg font-semibold text-green-600 dark:text-green-400">Thời gian thực</span>
                         )}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Cache: {audioState.analysisCache.size} entries
+                        Bộ nhớ đệm: {audioState.analysisCache.size} mục
                       </div>
                     </div>
                   </div>
 
                   {/* Key Indicators */}
                   {audioState.keyIndicators.length > 0 && (
-                    <div className="mb-4 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Key Emotional Indicators:</span>
+                    <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Chỉ số cảm xúc chính:</span>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {audioState.keyIndicators.map((word, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs rounded">
+                          <span key={index} className="px-2 py-1 bg-[#0077b6]/10 dark:bg-[#0077b6]/30 text-[#0077b6] dark:text-[#00b4d8] text-xs rounded">
                             {word}
                           </span>
                         ))}
@@ -1417,8 +1428,8 @@ const LiveAnalysisView: React.FC = () => {
                   )}
 
                   {audioState.error && (
-                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      <p className="text-sm text-red-700 dark:text-red-400">{audioState.error}</p>
+                    <div className="mb-4 p-3 bg-[#e63946]/10 dark:bg-[#e63946]/20 border border-[#e63946]/40 dark:border-[#e63946]/40 rounded-lg">
+                      <p className="text-sm text-[#e63946] dark:text-[#e63946]">{audioState.error}</p>
                     </div>
                   )}
                 </div>
@@ -1427,11 +1438,17 @@ const LiveAnalysisView: React.FC = () => {
               {/* Sentiment Score Bar */}
               <div className="mb-4">
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  {selectedCallDetails.isLive ? 'Live Sentiment Score' : 'Sentiment Score'}
+                  {selectedCallDetails.isLive ? 'Sentiment Score' : 'Sentiment Score'}
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                   <div 
-                    className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-2 rounded-full transition-all duration-500"
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      selectedCallDetails.sentiment < 5
+                        ? 'bg-[#e63946]'
+                        : selectedCallDetails.sentiment < 8
+                        ? 'bg-[#f4a261]'
+                        : 'bg-[#52b788]'
+                    }`}
                     style={{width: `${(selectedCallDetails.sentiment / 10) * 100}%`}}
                   />
                 </div>
@@ -1440,7 +1457,7 @@ const LiveAnalysisView: React.FC = () => {
               {/* Live Transcript */}
               <div>
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  {selectedCallDetails.isLive ? 'Live Transcript' : 'Call Transcript'}
+                  {selectedCallDetails.isLive ? 'Bản chép lời' : 'Bản chép lời'}
                 </div>
                 <div className="space-y-3 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-3">
                   {selectedCallDetails.transcript.length === 0 && selectedCallDetails.isLive ? (
@@ -1448,15 +1465,15 @@ const LiveAnalysisView: React.FC = () => {
                       <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
-                      <p>Start recording to see live transcript</p>
+                      <p>Bắt đầu ghi âm để tạo bản chép lời trực tiếp</p>
                     </div>
                   ) : (
                     selectedCallDetails.transcript.map((entry, index) => (
                       <div key={index} className="text-sm">
                         <span className={`font-medium ${
-                          entry.speaker === 'Customer' ? 'text-blue-600 dark:text-blue-400' : 
-                          entry.speaker === 'Live' ? 'text-purple-600 dark:text-purple-400' :
-                          'text-green-600 dark:text-green-400'
+                          entry.speaker === 'Customer' ? 'text-[#0077b6] dark:text-[#00b4d8]' : 
+                          entry.speaker === 'Live' ? 'text-[#0077b6] dark:text-[#00b4d8]' :
+                          'text-[#52b788] dark:text-[#52b788]'
                         }`}>
                           {entry.speaker}
                           {entry.timestamp && (
@@ -1475,146 +1492,115 @@ const LiveAnalysisView: React.FC = () => {
           </div>
 
           {/* AI Recommendations */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI-Powered Recommendations</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Đề xuất từ trợ lý AI</h3>
             </div>
             
             <div className="p-6 space-y-4">
               {/* Current AI Suggestion */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    {audioState.isAnalyzing ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-1">
-                      {audioState.isAnalyzing ? 'Analyzing...' : 'Live Insight'}
-                    </h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                      {selectedCallDetails.suggestion}
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-blue-50 dark:bg-sky-900/40 border border-[#0077b6]/40 dark:border-[#0077b6]/50 rounded-xl p-4">
+                <h4 className="text-lg font-medium text-blue-600 dark:text-sky-400 mb-1">
+                  {audioState.isAnalyzing ? 'Đang phân tích...' : 'Kết quả phân tích'}
+                </h4>
+                <p className="text-sm text-blue-900 dark:text-sky-100">
+                  {selectedCallDetails.suggestion}
+                </p>
               </div>
               
               {/* Real-time Coaching Suggestions */}
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-[#f4a261]/10 dark:bg-[#f4a261]/20 border border-[#f4a261]/40 dark:border-[#f4a261]/50 rounded-xl p-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <h4 className="text-lg font-medium text-orange-500 dark:text-orange-500">Hướng dẫn nhân viên</h4>
+                  <div className="group relative">
+                    <svg className="w-4 h-4 text-[#f4a261] hover:text-[#f4a261] cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h4 className="font-medium text-amber-800 dark:text-amber-200">Agent Coaching</h4>
-                      <div className="group relative">
-                        <svg className="w-4 h-4 text-amber-600 hover:text-amber-800 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                          Hover for conversation tips
-                        </div>
-                      </div>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                      Di chuột để xem mẹo phản hồi
                     </div>
-                    <div className="space-y-3">
-                      {/* Coaching Tips */}
-                      <div>
-                        <h5 className="text-sm font-medium text-amber-700 dark:text-amber-300 mb-2">What to do:</h5>
-                        <ul className="text-xs text-amber-600 dark:text-amber-400 space-y-1">
-                          {audioState.coachingTips.map((tip, index) => (
-                            <li key={index} className="flex items-start space-x-2">
-                              <span className="text-amber-500 mt-0.5">•</span>
-                              <span>{tip}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm">
+                  {/* Coaching Tips */}
+                  <div>
+                    <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Cần làm:</h5>
+                    <ul className="text-orange-900 dark:text-orange-100 space-y-1">
+                      {audioState.coachingTips.map((tip, index) => (
+                        <li key={index} className="flex items-start space-x-2">
+                          <span className="text-[#f4a261] mt-0.5">•</span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                      {/* Example Phrases */}
-                      <div>
-                        <h5 className="text-sm font-medium text-amber-700 dark:text-amber-300 mb-2">What to say:</h5>
-                        <div className="space-y-2">
-                          {audioState.phraseExamples.map((phrase, index) => (
-                            <div key={index} className="group relative">
-                              <div className="bg-white dark:bg-slate-700 border border-amber-200 dark:border-amber-700 rounded-lg p-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-amber-25 dark:hover:bg-amber-900/10 cursor-pointer transition-colors">
-                                <div className="flex items-center justify-between">
-                                  <span>"{phrase}"</span>
-                                  <button 
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity text-amber-600 hover:text-amber-800"
-                                    onClick={() => navigator.clipboard.writeText(phrase)}
-                                    title="Copy to clipboard"
-                                  >
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
+                  {/* Example Phrases */}
+                  <div>
+                    <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Gợi ý câu nói:</h5>
+                    <div className="space-y-2">
+                      {audioState.phraseExamples.map((phrase, index) => (
+                        <div key={index} className="group relative">
+                          <div className="bg-white dark:bg-slate-800 border border-[#f4a261]/40 dark:border-[#f4a261] rounded-xl p-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#f4a261]/10 dark:hover:bg-[#f4a261]/10 cursor-pointer transition-colors">
+                            <div className="flex items-center justify-between">
+                              <span>"{phrase}"</span>
+                              <button 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f4a261] hover:text-[#f4a261]"
+                                onClick={() => navigator.clipboard.writeText(phrase)}
+                                title="Sao chép"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              </button>
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Warning Flags */}
-                      {audioState.warningFlags.length > 0 && (
-                        <div>
-                          <h5 className="text-sm font-medium text-red-600 dark:text-red-400 mb-2">Watch out for:</h5>
-                          <ul className="text-xs text-red-500 dark:text-red-400 space-y-1">
-                            {audioState.warningFlags.map((flag, index) => (
-                              <li key={index} className="flex items-start space-x-2">
-                                <span className="text-red-400 mt-0.5">•</span>
-                                <span>{flag}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      ))}
                     </div>
                   </div>
+
+                  {/* Warning Flags */}
+                  {audioState.warningFlags.length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Cần chú ý:</h5>
+                      <ul className="text-orange-900 dark:text-orange-100 space-y-1">
+                        {audioState.warningFlags.map((flag, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <span className="text-[#f4a261] mt-0.5">•</span>
+                            <span>{flag}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
               
               {/* Quick Actions */}
-              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-purple-800 dark:text-purple-200 mb-2">Quick Actions</h4>
-                    <div className="space-y-2">
-                      <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-700 rounded border hover:bg-gray-50 dark:hover:bg-slate-600 text-sm">
-                        Escalate to Senior Agent
-                      </button>
-                      <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-700 rounded border hover:bg-gray-50 dark:hover:bg-slate-600 text-sm">
-                        Offer Discount/Compensation
-                      </button>
-                      <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-700 rounded border hover:bg-gray-50 dark:hover:bg-slate-600 text-sm">
-                        Schedule Follow-up Call
-                      </button>
-                    </div>
-                  </div>
+              <div className="bg-[#52b788]/10 dark:bg-[#52b788]/20 border border-[#52b788]/40 dark:border-[#52b788]/50 rounded-xl p-4">
+                <h4 className="text-lg font-medium text-green-600 dark:text-green-400 mb-3">Thao tác nhanh</h4>
+                <div className="space-y-2">
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                    Chuyển tiếp khách hàng lên bộ phận cao hơn
+                  </button>
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                    Đề xuất giảm giá/ bồi thường
+                  </button>
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                    Đặt lịch gọi lại
+                  </button>
                 </div>
               </div>
 
               {/* Emotion History */}
               {selectedCallDetails.isLive && audioState.transcript.length > 0 && (
-                <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Emotion Tracking</h4>
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-200 dark:border-gray-700">
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Theo dõi cảm xúc</h4>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Current: <span className="font-medium">{audioState.emotion}</span>
+                    Hiện tại: <span className="font-medium">{audioState.emotion}</span>
                     <br />
-                    Transcript entries: <span className="font-medium">{audioState.transcript.length}</span>
+                    Số lượt hội thoại: <span className="font-medium">{audioState.transcript.length}</span>
                   </div>
                 </div>
               )}

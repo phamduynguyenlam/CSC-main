@@ -23,9 +23,10 @@ export const LiveAnalysisIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props)
 );
 
 export const SocialIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v4a2 2 0 01-2 2h-2m-4-6h4m0 6H7a2 2 0 01-2-2V7a2 2 0 012-2h4l2 3h4a2 2 0 012 2v2M7 7h4" />
-    </svg>
+  <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.935-2.186 2.25 2.25 0 00-3.935 2.186z"
+    />
+  </svg>
 );
 
 

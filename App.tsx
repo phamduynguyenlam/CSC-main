@@ -14,6 +14,9 @@ import { View } from './types';
 const App: React.FC = () => {
   const [view, setView] = useState<View>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean>(true);
+  const [managerMode, setManagerMode] = useState<boolean>(false);
+  const [switchingAccount, setSwitchingAccount] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     // Check for saved theme preference or default to system preference
     const savedTheme = localStorage.getItem('theme');
@@ -55,7 +58,19 @@ const App: React.FC = () => {
       case 'settings':
         return <SettingsView />;
       case 'profile':
-        return <ProfileView />;
+        return (
+          <ProfileView
+            managerMode={managerMode}
+            loggedIn={loggedIn}
+            switchingAccount={switchingAccount}
+            onLogin={() => setLoggedIn(true)}
+            onToggleManagerMode={() => setManagerMode(prev => !prev)}
+            onStartSwitchAccount={() => setSwitchingAccount(true)}
+            onSetManagerMode={(value: boolean) => setManagerMode(value)}
+            onCancelSwitchAccount={() => setSwitchingAccount(false)}
+            onLogout={() => setLoggedIn(false)}
+          />
+        );
       default:
         return <DashboardView />;
     }
@@ -100,6 +115,10 @@ const App: React.FC = () => {
           onThemeToggle={toggleTheme}
           isDarkMode={isDarkMode}
           onProfileClick={() => setView('profile')}
+          managerMode={managerMode}
+          onSettingsClick={() => setView('settings')}
+          onToggleManagerMode={() => setManagerMode(prev => !prev)}
+          onLogout={() => setLoggedIn(false)}
         />
         <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900">
           <div className="p-6">

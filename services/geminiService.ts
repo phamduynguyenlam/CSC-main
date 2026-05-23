@@ -143,23 +143,23 @@ export async function askSenseAI(request: ChatRequest): Promise<EnhancedChatResp
         const data: EnhancedChatResponse = await response.json();
         return data;
     } catch (error) {
-        console.error('Error asking SenseAI:', error);
+        console.error('Lỗi khi gửi câu hỏi đến CSCopilot:', error);
         
         return {
             success: false,
-            response: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+            response: "Tôi xin lỗi, hiện tại kết nối đang gặp sự cố. Vui lòng thử lại trong giây lát.",
             sentiment: {
-                emotion: 'Neutral',
-                suggestion: 'Try again later',
+                emotion: 'Trung tính',
+                suggestion: 'Thử lại sau',
                 score: 5,
-                priority: 'low',
+                priority: 'Thấp',
                 keyIndicators: [],
                 suggestions: []
             },
             context: {
-                userEmotion: 'Neutral',
+                userEmotion: 'Trung tính',
                 confidenceScore: 5,
-                priority: 'low',
+                priority: 'Thấp',
                 keyIndicators: [],
                 suggestions: []
             },
@@ -218,7 +218,7 @@ export async function askGeminiQuestion(request: AskApiRequest): Promise<AskApiR
             suggestedFollowUps: data.context.suggestions || []
         };
     } catch (error) {
-        console.error('Error asking Gemini question:', error);
+        console.error('Lỗi khi gửi câu hỏi đến Gemini:', error);
         throw error;
     }
 }
@@ -243,16 +243,16 @@ export async function analyzeTranscriptForSuggestions(
         const data = await response.json();
         return {
             emotion: data.emotion || 'Unknown',
-            suggestion: data.suggestion || 'Continue monitoring conversation.',
+            suggestion: data.suggestion || 'Tiếp tục giám sát cuộc hội thoại.',
             sentimentScore: data.sentimentScore || 5,
-            intensity: data.intensity || 'medium',
+            intensity: data.intensity || 'Trung bình',
             keyIndicators: data.keyIndicators || [],
-            priority: data.priority || 'medium',
-            recommendedTone: data.recommendedTone || 'professional',
+            priority: data.priority || 'Trung bình',
+            recommendedTone: data.recommendedTone || 'Chuyên nghiệp',
             coachingTips: data.coachingTips || [
-                'Listen actively and acknowledge the customer concern',
-                'Use empathetic language to build rapport',
-                'Focus on solutions rather than problems'
+                'Lắng nghe tích cực và ghi nhận mối bận tâm của khách hàng',
+                'Sử dụng ngôn ngữ đồng cảm để xây dựng mối quan hệ',
+                'Lắng nghe tích cực và ghi nhận mối bận tâm của khách hàng'
             ],
             phraseExamples: data.phraseExamples || [
                 'I understand your concern and I am here to help',
@@ -265,24 +265,24 @@ export async function analyzeTranscriptForSuggestions(
         console.error('Error analyzing transcript:', error);
         
         return {
-            emotion: 'Neutral',
-            suggestion: 'Monitor the conversation and maintain professional tone.',
+            emotion: 'Trung tính',
+            suggestion: 'Giám sát cuộc hội thoại và duy trì tác phong chuyên nghiệp.',
             sentimentScore: 5,
-            intensity: 'medium',
+            intensity: 'Trung bình',
             keyIndicators: [],
-            priority: 'medium',
-            recommendedTone: 'professional',
+            priority: 'Trung bình',
+            recommendedTone: 'Chuyên nghiệp',
             coachingTips: [
-                'Listen actively to understand the customer needs',
-                'Respond with empathy and professionalism',
-                'Focus on providing clear, actionable solutions'
+                'Lắng nghe tích cực để thấu hiểu nhu cầu của khách hàng',
+                'Phản hồi bằng sự thấu hiểu và chuyên nghiệp',
+                'Tập trung vào việc đưa ra các giải pháp rõ ràng và có thể thực hiện ngay'
             ],
             phraseExamples: [
                 'I understand your situation',
                 'Let me help you with that',
                 'Thank you for bringing this to my attention'
             ],
-            warningFlags: ['Monitor for service availability']
+            warningFlags: ['Giám sát tính khả dụng của dịch vụ']
         };
     }
 }
@@ -302,10 +302,10 @@ export async function getAssistantResponse(prompt: string, history: Content[] = 
         }
 
         const data = await response.json();
-        return data.response || 'I apologize, but I could not generate a response at this time.';
+        return data.response || 'Tôi xin lỗi, hiện tại tôi không thể tạo phản hồi vào lúc này.';
     } catch (error) {
-        console.error('Error getting assistant response:', error);
-        return 'I am currently unable to process your request. Please try again later.';
+        console.error('Lỗi khi tải phản hồi từ trợ lý AI:', error);
+        return 'Tôi hiện chưa thể xử lý yêu cầu của bạn. Vui lòng thử lại sau.';
     }
 }
 
@@ -336,12 +336,12 @@ export async function quickSentimentCheck(text: string): Promise<SentimentAnalys
 
         return chatResponse.sentiment;
     } catch (error) {
-        console.error('Error in quick sentiment check:', error);
+        console.error('Lỗi khi nhận diện cảm xúc:', error);
         return {
-            emotion: 'Neutral',
-            suggestion: 'Unable to analyze sentiment at this time',
+            emotion: 'Trung tính',
+            suggestion: 'Không thể phân tích cảm xúc vào lúc này',
             score: 5,
-            priority: 'low',
+            priority: 'High',
             keyIndicators: [],
             suggestions: []
         };
