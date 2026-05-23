@@ -308,10 +308,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '👂 ƯU TIÊN: Lắng nghe, thấu hiểu cảm xúc, chịu trách nhiệm'
       ],
       phraseExamples: [
-        'I completely understand why you\'re angry - this is unacceptable',
-        'You have every right to be upset, and I\'m going to fix this personally',
-        'I hear your frustration, and I\'m taking full responsibility',
-        'Let me make this right immediately - what would you like me to do?'
+        'Em hoàn toàn hiểu vì sao anh/chị tức giận, tình huống này là không thể chấp nhận được.',
+        'Anh/chị hoàn toàn có lý do để bức xúc, và em sẽ trực tiếp hỗ trợ xử lý việc này.',
+        'Em đã ghi nhận rõ sự bực bội của anh/chị và em xin chịu trách nhiệm theo dõi việc này.',
+        'Để em xử lý ngay việc này cho anh/chị, anh/chị mong muốn hướng giải quyết nào trước ạ?'
       ],
       warningFlags: [
         '🔴 CẢNH BÁO: Nguy cơ leo thang - cần xử lý hết sức cẩn thận',
@@ -327,10 +327,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '⏰ Đặt ra những kỳ vọng và thời hạn rõ ràng'
       ],
       phraseExamples: [
-        'I can see this is really frustrating - here\'s exactly what we\'ll do',
-        'Let\'s tackle this step by step and get it resolved',
-        'I have three options to fix this - which works best for you?',
-        'I\'m committed to solving this today - here\'s our plan'
+        'Em hiểu việc này đang làm anh/chị rất bực, đây là hướng xử lý cụ thể của mình.',
+        'Mình cùng xử lý từng bước để giải quyết dứt điểm vấn đề này nhé anh/chị.',
+        'Hiện em có vài phương án xử lý, anh/chị xem phương án nào phù hợp nhất ạ?',
+        'Em sẽ theo sát để xử lý việc này hôm nay, đây là kế hoạch cụ thể.'
       ],
       warningFlags: [
         '⚡ Phát hiện dấu hiệu tiêu cực từ phía khách hàng',
@@ -346,10 +346,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '📞 Cân nhắc báo cáo cho cấp trên nếu cần thiết'
       ],
       phraseExamples: [
-        'That\'s completely unacceptable, and I apologize profusely',
-        'I\'m appalled that this happened - let me fix this immediately',
-        'You shouldn\'t have to deal with this - I\'m making it right',
-        'This is not the experience we want for you - ever'
+        'Tình huống này hoàn toàn không chấp nhận được, em thật sự xin lỗi anh/chị.',
+        'Em rất tiếc vì việc này đã xảy ra, để em xử lý ngay cho anh/chị.',
+        'Anh/chị không nên phải gặp trải nghiệm như vậy, em sẽ hỗ trợ khắc phục ngay.',
+        'Đây không phải trải nghiệm mà bên em mong muốn mang đến cho anh/chị.'
       ],
       warningFlags: [
         '🚨 Phản ứng tiêu cực nghiêm trọng - cần xử lý cẩn thận',
@@ -365,10 +365,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🔮 Làm nhiều hơn những gì họ mong đợi vào lần sau'
       ],
       phraseExamples: [
-        'I can hear the disappointment in your voice, and I want to make this better',
-        'This isn\'t the experience you expected, and I\'m sorry about that',
-        'Let me understand what you were hoping for and see how we can deliver',
-        'I want to turn this disappointment into a great experience'
+        'Em nghe rõ sự thất vọng trong giọng nói của anh/chị và em muốn cải thiện tình huống này.',
+        'Đây không phải trải nghiệm anh/chị mong đợi, em xin lỗi về điều đó.',
+        'Để em hiểu rõ kỳ vọng của anh/chị và xem bên em có thể đáp ứng theo hướng nào tốt nhất.',
+        'Em muốn biến trải nghiệm chưa tốt này thành một kết quả tích cực hơn cho anh/chị.'
       ],
       warningFlags: [
         '📉 Niềm tin có thể bị tổn hại - Tập trung vào việc xây dựng lại nó',
@@ -383,10 +383,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🎨 Sử dụng các phép so sánh hoặc ví dụ mà họ có thể hiểu'
       ],
       phraseExamples: [
-        'Let me break this down into simple steps you can follow',
-        'I\'ll explain this in plain English - no technical terms',
-        'Think of it like this... [use simple analogy]',
-        'Does that make sense, or would you like me to explain it differently?'
+        'Để em chia nhỏ nội dung này thành từng bước đơn giản để anh/chị dễ theo dõi.',
+        'Em sẽ giải thích theo cách dễ hiểu nhất, không dùng thuật ngữ phức tạp.',
+        'Anh/chị có thể hình dung đơn giản thế này...',
+        'Phần này anh/chị đã thấy rõ chưa, hay em giải thích lại theo cách khác ạ?'
       ],
       warningFlags: [
         '🧠 Đừng cung cấp quá nhiều thông tin',
@@ -402,10 +402,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '💖 Tạo những khoảnh khắc đáng nhớ và dễ chia sẻ'
       ],
       phraseExamples: [
-        'I love your enthusiasm! This is going to be amazing for you',
-        'You\'re going to get so much value from this - I\'m excited for you!',
-        'Since you love this, you might also be interested in...',
-        'Your excitement is contagious - thank you for making my day!'
+        'Em rất thích sự hào hứng của anh/chị, thông tin này sẽ rất phù hợp với anh/chị đấy ạ.',
+        'Anh/chị sẽ nhận được nhiều giá trị từ việc này, em cũng rất vui cho anh/chị.',
+        'Nếu anh/chị quan tâm nội dung này, có thể anh/chị cũng sẽ thích thêm lựa chọn sau.',
+        'Năng lượng tích cực của anh/chị thật sự rất truyền cảm hứng ạ.'
       ],
       warningFlags: [
         '💎 Cơ hội vàng - đừng lãng phí nó',
@@ -420,10 +420,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🤝 Tăng cường mối quan hệ khánh hàng với doanh nghiệp'
       ],
       phraseExamples: [
-        'I\'m so glad you\'re happy with this - it makes my day!',
-        'Your smile is exactly what we hope to see',
-        'Is there anything else I can help you with while you\'re here?',
-        'Would you mind sharing your positive experience with others?'
+        'Em rất vui khi anh/chị hài lòng với kết quả này.',
+        'Phản hồi tích cực của anh/chị là điều bên em luôn mong muốn.',
+        'Nhân tiện, anh/chị còn cần em hỗ trợ thêm điều gì nữa không ạ?',
+        'Nếu thuận tiện, anh/chị có thể chia sẻ thêm phản hồi tích cực của mình giúp bên em không ạ?'
       ],
       warningFlags: [
         '📝 Thời điểm tuyệt vời để xin phản hồi về sản phẩm',
@@ -438,10 +438,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🌟 Xây dựng sự trung thành với thương hiệu'
       ],
       phraseExamples: [
-        'You\'re so welcome - helping you was truly my pleasure',
-        'Thank you for giving me the opportunity to help',
-        'I\'m always here whenever you need support',
-        'Customers like you make this job rewarding'
+        'Dạ không có gì ạ, em rất vui khi có thể hỗ trợ anh/chị.',
+        'Cảm ơn anh/chị đã cho em cơ hội được hỗ trợ.',
+        'Bất cứ khi nào cần, anh/chị cứ liên hệ, bên em luôn sẵn sàng hỗ trợ.',
+        'Sự tin tưởng của anh/chị là điều rất quý với bên em.'
       ],
       warningFlags: [
         '💯 Thời điểm hoàn hảo để xây dựng mối quan hệ',
@@ -456,10 +456,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '📞 Cung cấp cho khách kênh liên lạc trực tiếp để được giải đáp thắc mắc trong tương lai'
       ],
       phraseExamples: [
-        'I understand your concerns, and here\'s how we address them...',
-        'Let me put your mind at ease about this',
-        'I want you to feel completely comfortable, so let\'s talk through this',
-        'I\'m here to support you every step of the way'
+        'Em hiểu những lo lắng của anh/chị, và đây là cách bên em xử lý vấn đề này.',
+        'Để em giải thích rõ để anh/chị yên tâm hơn về trường hợp này.',
+        'Em muốn anh/chị thật sự thấy yên tâm, nên mình cùng trao đổi kỹ phần này nhé.',
+        'Em sẽ đồng hành và hỗ trợ anh/chị trong từng bước xử lý.'
       ],
       warningFlags: [
         '🔍 Có thể cần giải thích chi tiết',
@@ -473,10 +473,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🔄 Đảm bảo rằng khách hàng biết mình sẽ được hỗ trợ cả trong tương lai'
       ],
       phraseExamples: [
-        'I\'m glad this works for you - is there anything else I can do?',
-        'Great! I want to make sure you have everything you need',
-        'Perfect! Don\'t hesitate to reach out if you need anything',
-        'I\'m here if you have any questions down the road'
+        'Em rất vui vì hướng này phù hợp với anh/chị, anh/chị còn cần em hỗ trợ gì thêm không ạ?',
+        'Tốt quá ạ, em muốn chắc rằng anh/chị đã có đầy đủ thông tin cần thiết.',
+        'Nếu sau đó anh/chị cần thêm hỗ trợ, cứ liên hệ với bên em bất cứ lúc nào.',
+        'Em luôn sẵn sàng nếu anh/chị có thêm câu hỏi trong quá trình sử dụng.'
       ],
       warningFlags: [
         '⬆️ Cơ hội để chuyển từ hài lòng sang vượt mong đợi',
@@ -491,10 +491,10 @@ const getLocalCoachingSuggestions = (emotion: string, sentimentScore: number) =>
         '🌟 Tạo ra một trải nghiệm tích cực và đáng nhớ'
       ],
       phraseExamples: [
-        'How can I make your day a little better?',
-        'What brings you here today - I\'m excited to help!',
-        'I\'d be happy to help you with that',
-        'Let me see what options we have for you'
+        'Em có thể hỗ trợ anh/chị thế nào để mọi việc thuận lợi hơn ạ?',
+        'Hôm nay anh/chị đang cần bên em hỗ trợ nội dung gì ạ?',
+        'Em rất sẵn lòng hỗ trợ anh/chị việc này.',
+        'Để em xem hiện có những phương án nào phù hợp cho anh/chị.'
       ],
       warningFlags: [
         '⚡ Cơ hội để tạo đà phát triển tích cực',
@@ -683,9 +683,9 @@ const LiveAnalysisView: React.FC = () => {
       'Tiếp tục nói một cách tự nhiên'
     ],
     phraseExamples: [            // Default phrase examples during warmup
-      'Please continue the conversation...',
-      'System is processing audio patterns...',
-      'Detailed insights coming soon...'
+      'Anh/chị cứ tiếp tục trao đổi tự nhiên...',
+      'Hệ thống đang xử lý tín hiệu giọng nói...',
+      'Gợi ý chi tiết sẽ xuất hiện sau ít giây nữa...'
     ],
     warningFlags: [              // Initial warning flags
       'Giai đoạn khởi động - đang chờ phân tích chi tiết',
@@ -867,7 +867,7 @@ const LiveAnalysisView: React.FC = () => {
       // Optimal configuration for customer service scenarios
       recognitionRef.current.continuous = true;      // Continuous listening
       recognitionRef.current.interimResults = true;  // Real-time partial results
-      recognitionRef.current.lang = 'en-US';         // Language optimization
+      recognitionRef.current.lang = 'vi-VN';         // Vietnamese speech recognition
       recognitionRef.current.maxAlternatives = 1;    // Performance optimization
 
       /**

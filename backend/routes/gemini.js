@@ -33,115 +33,120 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 function buildTranscriptAnalysisPrompt(transcript, customerContext = null) {
   const customerContextBlock = customerContext
     ? `
-        CUSTOMER CONTEXT:
+        NGU CANH KHACH HANG:
         ${JSON.stringify(customerContext, null, 2)}
 
-        CONTEXT USAGE RULES:
-        - Use customer history only when it changes urgency, tone, or recommended next action.
-        - If you detect repeat unresolved issues, increase priority and advise acknowledgment of prior friction.
-        - Do not invent order details, policies, or promises beyond the provided customer context.
+        NGUYEN TAC SU DUNG NGU CANH:
+        - Chi dung lich su khach hang khi no thay doi muc do uu tien, giong dieu chinh hoac buoc xu ly tiep theo.
+        - Neu phat hien van de lap lai chua duoc giai quyet, hay tang muc do uu tien va khuyen nghi thua nhan su bat tien truoc do.
+        - Khong duoc tu y bịa them thong tin don hang, chinh sach hay cam ket ngoai du lieu duoc cung cap.
       `
     : '';
 
   return `
-        You are an expert sentiment analysis AI trained on thousands of customer conversations. Analyze this statement with MAXIMUM ACCURACY.
+        Ban la AI chuyen phan tich cam xuc khach hang, da duoc huan luyen tren nhieu cuoc hoi thoai tong dai. Hay phan tich transcript voi do chinh xac cao nhat.
 
-        CUSTOMER STATEMENT: "${transcript}"
+        TRANSCRIPT KHACH HANG: "${transcript}"
         ${customerContextBlock}
 
-        ADVANCED ANALYSIS RULES:
+        YEU CAU PHAN TICH:
 
-        1. EMOTION DETECTION PRIORITY (choose ONLY ONE, in exact order):
-           
-           IMMEDIATE NEGATIVE DETECTION (if ANY indicator present):
-           - "Angry": hate, furious, pissed, mad, livid, outraged, disgusted, fed up, sick of, can't stand, rage, fuck, shit, damn, hell, asshole, bitch, unacceptable, ridiculous, bullshit, garbage, trash, worthless
-           - "Frustrated": frustrated, annoying, annoyed, irritated, doesn't work, not working, broken, stupid, terrible, awful, horrible, wtf, wth, omg, seriously, ugh, argh, tried everything, still broken, keeps happening
-           - "Disgusted": disgusting, gross, nasty, revolting, repulsive, sick, horrible, hideous, appalling, vile, nauseating, offensive
-           - "Disappointed": disappointed, sucks, bad, worse, terrible, disappointing, let down, expected better, useless, pathetic, weak, lame, boring, underwhelming, not impressed
-           
-           SARCASM DETECTION (negative despite positive words):
-           - "oh great", "just great", "wonderful" + negative context = Frustrated
-           - "perfect" + "..." or negative tone = Frustrated
-           - "fantastic" + sarcastic context = Frustrated
-           
-           MIXED/CONDITIONAL EMOTIONS:
-           - "I guess", "whatever", "fine whatever", "if you say so", "yeah right" = Disappointed
-           
-           POSITIVE EMOTIONS (only if no negative detected):
-           - "Excited": excited, amazing, fantastic, incredible, awesome, can't wait, love it, perfect, excellent, brilliant, joyful, joyous, thrilled, elated, ecstatic, overjoyed
-           - "Grateful": thank, thanks, appreciate, grateful, helpful, blessing, thankful, blessed
-           - "Happy": happy, pleased, delighted, great, wonderful, good, nice, cool, glad, cheerful, joy, blissful, content, merry, uplifted
-           - "Satisfied": satisfied, fine, okay, good enough, that works, alright, decent
-           
-           NEUTRAL/OTHER:
-           - "Concerned": worried, concerned, anxious, nervous, uncertain, what if
-           - "Confused": confused, don't understand, unclear, complicated, lost, how do i
+        1. Xac dinh DUNG 1 cam xuc chinh.
+        Cac nhan cam xuc hop le:
+        - Angry
+        - Frustrated
+        - Disappointed
+        - Concerned
+        - Confused
+        - Neutral
+        - Satisfied
+        - Happy
+        - Grateful
+        - Excited
 
-        2. INTENSITY MODIFIERS:
-           - ALL CAPS = +2 intensity points
-           - Multiple !!! = +1.5 intensity points
-           - Intensifiers (really, very, extremely, absolutely, completely, so, super) = +1 intensity point
-           - Profanity = +2 intensity points
-           - Multiple negative words = +1 point per extra word
+        2. Transcript co the la tieng Viet. Hay uu tien hieu nghia, sac thai va muc do buc xuc trong tieng Viet.
+        Goi y cum tu:
+        - Angry: "qua te", "khong chap nhan duoc", "rat tuc", "qua buc xuc", "toi noi that la qua boi roi"
+        - Frustrated: "van chua xong", "goi nhieu lan roi", "sao chua xu ly", "rat phien", "khong ai ho tro"
+        - Disappointed: "that vong", "mong doi hon", "khong nhu cam ket"
+        - Concerned: "toi lo", "khong biet bao gio", "nhu vay co sao khong"
+        - Confused: "toi khong hieu", "huong dan giup toi", "toi chua ro"
+        - Happy/Grateful/Satisfied: "cam on", "tot roi", "on roi", "hai long", "rat tot"
 
-        3. CONTEXT-AWARE SCORING:
-           - Angry: 1.0-2.0 (lower with more intensity)
-           - Frustrated: 2.0-3.0
-           - Disgusted: 1.5-2.5
-           - Disappointed: 2.5-3.5
-           - Sarcastic: Always 2.0-3.0 range
-           - Concerned: 3.5-4.5
-           - Confused: 4.0-5.0
-           - Neutral: 5.0
-           - Satisfied: 6.0-7.0
-           - Happy: 7.0-8.0
-           - Grateful: 8.0-9.0
-           - Excited: 8.5-10.0
+        3. Cham diem sentiment tu 1 den 10:
+        - 1-3: rat tieu cuc
+        - 4-5: tieu cuc nhe / trung tinh
+        - 6-7: tam on / hai long
+        - 8-10: tich cuc ro rang
 
-        4. TRAINING EXAMPLES:
-           - "I hate this thing" -> Angry, 1.0, high intensity
-           - "This is absolutely ridiculous" -> Angry, 1.5, high intensity
-           - "Oh great, just what I needed..." -> Frustrated, 2.5, medium intensity
-           - "I guess it's fine whatever" -> Disappointed, 3.0, low intensity
-           - "WTF is wrong with this???" -> Frustrated, 2.0, high intensity
-           - "This sucks so bad" -> Disappointed, 2.5, medium intensity
-           - "Doesn't work at all" -> Frustrated, 2.5, medium intensity
-           - "Really amazing work!" -> Excited, 9.0, high intensity
-           - "Thank you so much" -> Grateful, 8.5, high intensity
+        4. Xac dinh intensity la low, medium hoac high dua tren tu ngu, dau cau, su lap lai, va muc do buc xuc.
 
-        5. EDGE CASES:
-           - Positive words + negative context = Focus on negative context
-           - Questions with frustration = Frustrated, not Confused
-           - Mild complaints = Disappointed, not Angry
-           - Repeated issues = Frustrated with higher intensity
+        5. coachingTips, phraseExamples va warningFlags phai viet bang tieng Viet tu nhien, dung cho agent call center.
 
-        RESPOND WITH EXACT JSON FORMAT:
+        6. Neu transcript co dau hieu van de lap lai, hay tang priority.
+
+        CHI TRA VE JSON HOP LE, KHONG THEM GIAI THICH NGOAI JSON:
         {
-          "emotion": "exact emotion name from list above",
-          "sentimentScore": precise_number_1_to_10_with_decimals,
+          "emotion": "mot nhan cam xuc trong danh sach hop le",
+          "sentimentScore": so tu 1 den 10, co the co so thap phan,
           "intensity": "low/medium/high",
-          "keyIndicators": ["specific words that triggered this emotion"],
-          "suggestion": "specific agent action for this emotion",
-          "priority": "high for negative emotions, medium for neutral, low for positive",
-          "recommendedTone": "empathetic for negative, professional for neutral, enthusiastic for positive",
+          "keyIndicators": ["cac tu/cum tu quan trong dan den ket luan"],
+          "suggestion": "goi y hanh dong cu the cho agent",
+          "priority": "high/medium/low",
+          "recommendedTone": "dong cam/chuyen nghiep/tich cuc",
           "coachingTips": [
-            "Specific behavioral tip for this emotion",
-            "Tone guidance for this emotional state",
-            "Next step recommendation"
+            "goi y hanh vi 1",
+            "goi y hanh vi 2",
+            "goi y buoc tiep theo"
           ],
           "phraseExamples": [
-            "Perfect response phrase for this emotion",
-            "Alternative empathetic response",
-            "Follow-up phrase option"
+            "cau mau phan hoi 1",
+            "cau mau phan hoi 2",
+            "cau mau phan hoi 3"
           ],
           "warningFlags": [
-            "Escalation risk for this emotion",
-            "Behavioral warning sign"
+            "rui ro leo thang 1",
+            "dau hieu can luu y 2"
           ]
         }
-
-        BE EXTREMELY CONSISTENT: Same emotional words should ALWAYS produce the same emotion classification and similar sentiment scores.
       `;
+}
+
+function localizeEmotion(emotion) {
+  const map = {
+    Angry: 'Tức giận',
+    Frustrated: 'Bực bội',
+    Disappointed: 'Thất vọng',
+    Concerned: 'Lo lắng',
+    Confused: 'Bối rối',
+    Neutral: 'Trung tính',
+    Satisfied: 'Hài lòng',
+    Happy: 'Vui vẻ',
+    Grateful: 'Biết ơn',
+    Excited: 'Hào hứng',
+  };
+  return map[emotion] || emotion || 'Trung tính';
+}
+
+function localizePriority(priority) {
+  const map = {
+    high: 'Cao',
+    medium: 'Trung bình',
+    low: 'Thấp',
+  };
+  return map[priority] || priority || 'Trung bình';
+}
+
+function localizeTone(tone) {
+  const map = {
+    empathetic: 'Đồng cảm',
+    professional: 'Chuyên nghiệp',
+    enthusiastic: 'Tích cực',
+    'dong cam': 'Đồng cảm',
+    'chuyen nghiep': 'Chuyên nghiệp',
+    'tich cuc': 'Tích cực',
+  };
+  return map[String(tone || '').toLowerCase()] || tone || 'Chuyên nghiệp';
 }
 
 async function loadCustomerContextByPhoneNumber(phoneNumber) {
@@ -412,64 +417,64 @@ function analyzeTextSentiment(text) {
   // Helper functions for enhanced coaching
   function getSuggestion(emotion) {
     const suggestions = {
-      'Happy': "Customer is satisfied! Maintain this positive experience and consider upselling opportunities.",
-      'Satisfied': "Good interaction. Continue providing excellent service and ask if there's anything else needed.",
-      'Grateful': "Customer appreciates the service. This is a great opportunity to strengthen the relationship.",
-      'Excited': "Customer is very enthusiastic! Capitalize on this energy and explore additional ways to help.",
-      'Frustrated': "Customer is frustrated. Acknowledge their feelings, apologize for the inconvenience, and focus on immediate resolution.",
-      'Angry': "Customer is angry. Stay calm, listen actively, apologize sincerely, and escalate if necessary.",
-      'Disappointed': "Customer had higher expectations. Acknowledge the disappointment and work to exceed expectations moving forward.",
-      'Confused': "Customer needs clarification. Slow down, explain step-by-step, and ensure understanding before proceeding.",
-      'Concerned': "Customer has concerns. Address them directly with reassurance and detailed information.",
-      'Neutral': "Customer seems neutral. Engage proactively to understand their needs and provide helpful assistance."
+      'Happy': 'Khách hàng đang có trải nghiệm tích cực. Hãy duy trì nhịp trao đổi tốt và chủ động hỗ trợ thêm nếu cần.',
+      'Satisfied': 'Cuộc trao đổi đang ổn. Tiếp tục giữ chất lượng phục vụ và xác nhận rằng mọi nhu cầu đã được giải quyết.',
+      'Grateful': 'Khách hàng đang thể hiện sự cảm kích. Đây là lúc phù hợp để củng cố thiện cảm và sự tin tưởng.',
+      'Excited': 'Khách hàng rất hào hứng. Hãy tận dụng năng lượng tích cực này và cung cấp thông tin thật rõ ràng.',
+      'Frustrated': 'Khách hàng đang bực bội. Hãy thừa nhận cảm xúc của họ, xin lỗi vì bất tiện và tập trung vào hướng xử lý ngay.',
+      'Angry': 'Khách hàng đang tức giận. Giữ bình tĩnh, lắng nghe chủ động, xin lỗi chân thành và sẵn sàng chuyển cấp nếu cần.',
+      'Disappointed': 'Khách hàng đang thất vọng. Hãy ghi nhận sự thất vọng đó và tập trung vào cách khắc phục cụ thể.',
+      'Confused': 'Khách hàng cần được giải thích rõ hơn. Hãy nói chậm, chia bước rõ ràng và kiểm tra mức độ hiểu.',
+      'Concerned': 'Khách hàng đang lo lắng. Hãy xử lý thẳng vào mối lo và đưa ra thông tin trấn an rõ ràng.',
+      'Neutral': 'Khách hàng đang ở trạng thái trung tính. Hãy chủ động khai thác nhu cầu và hỗ trợ một cách rõ ràng.'
     };
     return suggestions[emotion] || suggestions['Neutral'];
   }
 
   function getCoachingTips(emotion) {
     const tips = {
-      'Happy': ['Continue the positive momentum', 'Ask if there\'s anything else you can help with', 'This is a good time to ask for feedback'],
-      'Satisfied': ['Maintain professional service quality', 'Confirm all concerns are addressed', 'End on a positive note'],
-      'Grateful': ['Accept thanks graciously', 'Reinforce your commitment to service', 'Ask how else you can assist'],
-      'Excited': ['Match their enthusiasm appropriately', 'Provide detailed information they\'re seeking', 'Explore additional ways to help'],
-      'Frustrated': ['Acknowledge their frustration immediately', 'Use empathetic language', 'Focus on concrete solutions'],
-      'Angry': ['Stay calm and professional', 'Listen without interrupting', 'Prepare to escalate if needed'],
-      'Disappointed': ['Acknowledge their disappointment', 'Avoid making excuses', 'Focus on making it right'],
-      'Confused': ['Speak slowly and clearly', 'Break down information into steps', 'Check for understanding frequently'],
-      'Concerned': ['Address concerns directly', 'Provide reassuring information', 'Offer additional support'],
-      'Neutral': ['Engage proactively', 'Ask clarifying questions', 'Show genuine interest in helping']
+      'Happy': ['Duy trì không khí tích cực', 'Hỏi thêm khách còn cần hỗ trợ gì', 'Có thể tranh thủ xin phản hồi'],
+      'Satisfied': ['Giữ tác phong chuyên nghiệp', 'Xác nhận mọi vướng mắc đã được xử lý', 'Kết thúc bằng một ghi nhận tích cực'],
+      'Grateful': ['Đón nhận lời cảm ơn một cách nhã nhặn', 'Khẳng định cam kết hỗ trợ', 'Hỏi thêm khách còn cần gì nữa không'],
+      'Excited': ['Điều chỉnh theo sự hào hứng của khách', 'Cung cấp thông tin chi tiết họ đang quan tâm', 'Mở thêm hướng hỗ trợ phù hợp'],
+      'Frustrated': ['Ghi nhận sự bực bội ngay từ đầu', 'Dùng ngôn ngữ đồng cảm', 'Tập trung vào giải pháp cụ thể'],
+      'Angry': ['Giữ bình tĩnh và chuyên nghiệp', 'Lắng nghe mà không ngắt lời', 'Chuẩn bị phương án chuyển cấp nếu cần'],
+      'Disappointed': ['Thừa nhận sự thất vọng của khách', 'Tránh bao biện', 'Tập trung vào cách khắc phục'],
+      'Confused': ['Nói chậm và rõ', 'Chia thông tin thành từng bước', 'Thường xuyên kiểm tra khách đã hiểu chưa'],
+      'Concerned': ['Đi thẳng vào mối lo của khách', 'Đưa thông tin trấn an rõ ràng', 'Đề xuất thêm hỗ trợ khi cần'],
+      'Neutral': ['Chủ động dẫn dắt hội thoại', 'Đặt câu hỏi làm rõ', 'Thể hiện thiện chí hỗ trợ']
     };
     return tips[emotion] || tips['Neutral'];
   }
 
   function getPhraseExamples(emotion) {
     const phrases = {
-      'Happy': ['I\'m so glad to hear that!', 'That\'s wonderful news!', 'Is there anything else I can help you with today?'],
-      'Satisfied': ['I\'m pleased I could help', 'Thank you for your patience', 'Let me know if you need anything else'],
-      'Grateful': ['You\'re very welcome!', 'I\'m happy I could assist you', 'It\'s my pleasure to help'],
-      'Excited': ['I love your enthusiasm!', 'That sounds fantastic!', 'I\'m excited to help you with this'],
-      'Frustrated': ['I completely understand your frustration', 'Let me help resolve this right away', 'I can see why this would be frustrating'],
-      'Angry': ['I sincerely apologize for this issue', 'I want to make this right for you', 'Let me escalate this to my supervisor'],
-      'Disappointed': ['I\'m sorry this didn\'t meet your expectations', 'Let me see how I can improve this situation', 'I want to make this right'],
-      'Confused': ['Let me explain that more clearly', 'I\'ll walk you through this step by step', 'Does this make sense so far?'],
-      'Concerned': ['I understand your concerns', 'Let me address those worries', 'I\'m here to help resolve this'],
-      'Neutral': ['How can I assist you today?', 'I\'m here to help', 'What can I do for you?']
+      'Happy': ['Em rất vui khi nghe điều đó.', 'Thật tốt khi tình huống đang tiến triển tích cực.', 'Anh/chị còn cần em hỗ trợ gì thêm không ạ?'],
+      'Satisfied': ['Em rất vui vì đã hỗ trợ được anh/chị.', 'Cảm ơn anh/chị đã kiên nhẫn.', 'Nếu cần thêm hỗ trợ, anh/chị cứ nói với em ạ.'],
+      'Grateful': ['Dạ không có gì ạ.', 'Em rất vui khi có thể hỗ trợ anh/chị.', 'Rất cảm ơn anh/chị đã tin tưởng liên hệ.'],
+      'Excited': ['Em cảm nhận được sự hào hứng của anh/chị.', 'Thông tin này thật sự rất tích cực ạ.', 'Em sẽ hỗ trợ để anh/chị nắm đầy đủ thông tin cần thiết.'],
+      'Frustrated': ['Em hoàn toàn hiểu sự bực bội của anh/chị.', 'Để em hỗ trợ xử lý việc này ngay cho anh/chị.', 'Em hiểu vì sao tình huống này gây khó chịu cho anh/chị.'],
+      'Angry': ['Em thành thật xin lỗi về tình huống này.', 'Em muốn hỗ trợ để xử lý việc này thỏa đáng cho anh/chị.', 'Em sẽ kiểm tra ngay và chuyển cấp nếu cần thiết.'],
+      'Disappointed': ['Em xin lỗi vì kết quả này chưa đáp ứng kỳ vọng của anh/chị.', 'Để em xem cách cải thiện tình huống này ngay.', 'Em sẽ cố gắng xử lý để anh/chị yên tâm hơn.'],
+      'Confused': ['Để em giải thích lại rõ hơn ạ.', 'Em sẽ hướng dẫn từng bước để anh/chị dễ theo dõi.', 'Đến đây anh/chị đã nắm rõ chưa ạ?'],
+      'Concerned': ['Em hiểu mối lo của anh/chị.', 'Để em giải thích rõ phần anh/chị đang băn khoăn.', 'Em sẽ hỗ trợ để anh/chị yên tâm hơn.'],
+      'Neutral': ['Em có thể hỗ trợ anh/chị như thế nào ạ?', 'Em đang ở đây để hỗ trợ anh/chị.', 'Anh/chị có thể chia sẻ thêm để em hỗ trợ đúng hơn không ạ?']
     };
     return phrases[emotion] || phrases['Neutral'];
   }
 
   function getWarningFlags(emotion) {
     const flags = {
-      'Happy': ['Don\'t oversell', 'Stay focused'],
-      'Satisfied': ['Maintain quality', 'Don\'t assume everything is perfect'],
-      'Grateful': ['Don\'t become complacent', 'Continue professional service'],
-      'Excited': ['Don\'t overwhelm them', 'Stay focused on their needs'],
-      'Frustrated': ['Watch for escalation', 'Don\'t minimize their feelings'],
-      'Angry': ['Prepare for escalation', 'Don\'t take it personally'],
-      'Disappointed': ['Avoid defensive responses', 'Focus on solutions'],
-      'Confused': ['Don\'t rush explanations', 'Check understanding often'],
-      'Concerned': ['Address concerns promptly', 'Provide clear reassurance'],
-      'Neutral': ['Engage actively', 'Don\'t assume satisfaction']
+      'Happy': ['Tránh bán thêm quá đà', 'Giữ cuộc trao đổi đúng trọng tâm'],
+      'Satisfied': ['Duy trì chất lượng phục vụ', 'Đừng vội cho rằng mọi thứ đã hoàn hảo'],
+      'Grateful': ['Tránh chủ quan', 'Giữ tác phong chuyên nghiệp'],
+      'Excited': ['Đừng làm khách bị quá tải thông tin', 'Bám sát đúng nhu cầu của khách'],
+      'Frustrated': ['Theo dõi nguy cơ leo thang', 'Đừng xem nhẹ cảm xúc của khách'],
+      'Angry': ['Chuẩn bị phương án chuyển cấp', 'Không phản ứng mang tính cá nhân'],
+      'Disappointed': ['Tránh phản hồi phòng thủ', 'Tập trung vào giải pháp'],
+      'Confused': ['Đừng giải thích quá nhanh', 'Thường xuyên kiểm tra mức độ hiểu'],
+      'Concerned': ['Xử lý mối lo kịp thời', 'Đưa thông tin trấn an rõ ràng'],
+      'Neutral': ['Chủ động dẫn dắt cuộc trao đổi', 'Đừng mặc định khách đã hài lòng']
     };
     return flags[emotion] || flags['Neutral'];
   }
@@ -785,6 +790,7 @@ router.post('/analyze-transcript', async (req, res) => {
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
+      console.log('Gemini raw response:', text);
 
       try {
         // Parse JSON response from Gemini AI
@@ -792,26 +798,26 @@ router.post('/analyze-transcript', async (req, res) => {
         
         // Format and validate the response data with enhanced coaching features
         const analysisResult = {
-          emotion: parsed.emotion || 'Unknown',
-          suggestion: parsed.suggestion || 'Continue monitoring conversation.',
+          emotion: localizeEmotion(parsed.emotion || 'Neutral'),
+          suggestion: parsed.suggestion || 'Tiếp tục theo dõi cuộc hội thoại và hỗ trợ khách hàng một cách chủ động.',
           sentimentScore: parsed.sentimentScore || 5,
           intensity: parsed.intensity || 'medium',
           keyIndicators: parsed.keyIndicators || [],
-          priority: parsed.priority || 'medium',
-          recommendedTone: parsed.recommendedTone || 'professional',
+          priority: localizePriority(parsed.priority || 'medium'),
+          recommendedTone: localizeTone(parsed.recommendedTone || 'professional'),
           coachingTips: parsed.coachingTips || [
-            'Listen actively and acknowledge the customer\'s concern',
-            'Use empathetic language to build rapport',
-            'Focus on solutions rather than problems'
+            'Lắng nghe chủ động và ghi nhận mối quan tâm của khách hàng',
+            'Dùng ngôn ngữ đồng cảm để xây dựng sự tin tưởng',
+            'Tập trung vào giải pháp thay vì chỉ nhắc lại vấn đề'
           ],
           phraseExamples: parsed.phraseExamples || [
-            'I understand your concern and I\'m here to help',
-            'Let me look into this for you right away',
-            'I can see why this would be frustrating'
+            'Em hiểu mối quan tâm của anh/chị và em đang ở đây để hỗ trợ.',
+            'Để em kiểm tra ngay cho anh/chị ạ.',
+            'Em hiểu vì sao tình huống này khiến anh/chị khó chịu.'
           ],
           warningFlags: parsed.warningFlags || [
-            'Monitor for escalation signals',
-            'Watch for tone changes'
+            'Theo dõi dấu hiệu leo thang',
+            'Chú ý thay đổi trong giọng điệu của khách'
           ],
           customerContextMatched: Boolean(customerContext)
         };
@@ -820,20 +826,24 @@ router.post('/analyze-transcript', async (req, res) => {
       } catch (parseError) {
         // JSON parsing failed - use local fallback analysis with enhanced coaching
         console.error('JSON parsing error, using fallback analysis');
+        console.error('Gemini raw response before fallback:', text);
         const fallbackAnalysis = analyzeTextSentiment(transcript);
         
         // Add coaching suggestions to fallback analysis
         fallbackAnalysis.coachingTips = [
-          'Maintain a calm and professional tone',
-          'Acknowledge the customer\'s feelings',
-          'Offer specific next steps or solutions'
+          'Giữ giọng điệu bình tĩnh và chuyên nghiệp',
+          'Ghi nhận cảm xúc của khách hàng',
+          'Đưa ra bước tiếp theo hoặc giải pháp thật cụ thể'
         ];
         fallbackAnalysis.phraseExamples = [
-          'I hear what you\'re saying and I want to help',
-          'Let me see what I can do to resolve this',
-          'Thank you for bringing this to my attention'
+          'Em đã ghi nhận điều anh/chị vừa chia sẻ và em muốn hỗ trợ ngay.',
+          'Để em xem có thể xử lý việc này theo hướng nào tốt nhất cho anh/chị.',
+          'Cảm ơn anh/chị đã thông tin để bên em kiểm tra lại.'
         ];
-        fallbackAnalysis.warningFlags = ['Monitor conversation flow', 'Watch for frustration signals'];
+        fallbackAnalysis.warningFlags = ['Theo dõi diễn biến hội thoại', 'Chú ý dấu hiệu bực bội của khách'];
+        fallbackAnalysis.emotion = localizeEmotion(fallbackAnalysis.emotion);
+        fallbackAnalysis.priority = localizePriority(fallbackAnalysis.priority);
+        fallbackAnalysis.recommendedTone = localizeTone(fallbackAnalysis.recommendedTone);
         fallbackAnalysis.customerContextMatched = Boolean(customerContext);
         
         res.json(fallbackAnalysis);
@@ -842,6 +852,9 @@ router.post('/analyze-transcript', async (req, res) => {
       // Gemini API failed - use local fallback analysis
       console.error('Gemini API error, using fallback analysis:', apiError.message);
       const fallbackAnalysis = analyzeTextSentiment(transcript);
+      fallbackAnalysis.emotion = localizeEmotion(fallbackAnalysis.emotion);
+      fallbackAnalysis.priority = localizePriority(fallbackAnalysis.priority);
+      fallbackAnalysis.recommendedTone = localizeTone(fallbackAnalysis.recommendedTone);
       fallbackAnalysis.customerContextMatched = Boolean(customerContext);
       res.json(fallbackAnalysis);
     }
@@ -850,13 +863,13 @@ router.post('/analyze-transcript', async (req, res) => {
     console.error('Error analyzing transcript:', error);
     res.status(500).json({ 
       error: 'Failed to analyze transcript',
-      emotion: 'Neutral',
-      suggestion: 'Continue monitoring conversation.',
+      emotion: 'Trung tính',
+      suggestion: 'Tiếp tục theo dõi cuộc hội thoại.',
       sentimentScore: 5,
       intensity: 'medium',
       keyIndicators: [],
-      priority: 'medium',
-      recommendedTone: 'professional'
+      priority: 'Trung bình',
+      recommendedTone: 'Chuyên nghiệp'
     });
   }
 });

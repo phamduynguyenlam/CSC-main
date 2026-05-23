@@ -1,40 +1,43 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-let openaiClient;
+let geminiClient;
 
-function getOpenAIClient() {
-  if (openaiClient !== undefined) {
-    return openaiClient;
+function getGeminiApiKey() {
+  const key = process.env.GEMINI_API_KEY || process.env.API_KEY;
+  if (!key || key === 'your_google_gemini_api_key_here') {
+    return null;
   }
 
-  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
-    openaiClient = null;
-    return openaiClient;
+  return key;
+}
+
+function getGeminiClient() {
+  if (geminiClient !== undefined) {
+    return geminiClient;
   }
 
-  openaiClient = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
-  return openaiClient;
+  const apiKey = getGeminiApiKey();
+  geminiClient = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+  return geminiClient;
 }
 
 function buildSystemPrompt() {
   return [
-    'You are a senior customer support advisor for call center agents.',
-    'Your job is to read the current transcript and the customer context, then suggest the best next response for the agent.',
-    'Use customer history only when it materially helps with empathy, prioritization, and resolution.',
-    'Use retrieved call memory only when it is directly relevant to the current transcript.',
-    'Do not invent policies, order facts, or promises that are not present in the input.',
-    'If the context suggests unresolved repeat issues, explicitly acknowledge that pattern.',
-    'Return concise, actionable guidance in Markdown with these sections:',
-    '1. Situation Summary',
-    '2. Recommended Agent Response',
-    '3. Next Best Actions',
-    '4. Risk Flags',
+    'Bạn là cố vấn hỗ trợ khách hàng cấp cao dành cho tổng đài viên.',
+    'Nhiệm vụ của bạn là đọc transcript hiện tại và ngữ cảnh khách hàng, sau đó gợi ý phản hồi tốt nhất tiếp theo cho điện thoại viên.',
+    'Chỉ dùng lịch sử khách hàng khi nó thực sự giúp cải thiện sự đồng cảm, mức độ ưu tiên hoặc hướng xử lý.',
+    'Chỉ dùng call memory được truy xuất khi nó liên quan trực tiếp tới transcript hiện tại.',
+    'Không được bịa ra chính sách, thông tin đơn hàng hoặc cam kết ngoài dữ liệu đầu vào.',
+    'Nếu ngữ cảnh cho thấy đây là vấn đề lặp lại chưa được giải quyết, hãy nêu rõ và yêu cầu điện thoại viên thừa nhận điều đó.',
+    'Hãy trả lời ngắn gọn, cụ thể, có thể hành động ngay bằng Markdown với các mục:',
+    '1. Tóm tắt tình huống',
+    '2. Gợi ý phản hồi cho điện thoại viên',
+    '3. Các bước nên làm tiếp theo',
+    '4. Rủi ro cần lưu ý',
+    'Toàn bộ câu trả lời phải bằng tiếng Việt tự nhiên, rõ ràng, phù hợp ngữ cảnh chăm sóc khách hàng.',
   ].join(' ');
 }
 
@@ -77,19 +80,19 @@ function buildUserPrompt({ transcript, customerContext, conversationHistory = []
   const retrievedText = formatRetrievedContext(retrievedContext);
 
   return [
-    'CURRENT TRANSCRIPT:',
+    'TRANSCRIPT HIỆN TẠI:',
     transcript,
     '',
-    'CUSTOMER CONTEXT:',
+    'NGỮ CẢNH KHÁCH HÀNG:',
     JSON.stringify(customerContext, null, 2),
     '',
-    'RETRIEVED CALL MEMORY (REFERENCE ONLY):',
+    'CALL MEMORY ĐƯỢC TRUY XUẤT (CHỈ DÙNG THAM KHẢO):',
     retrievedText,
     '',
-    'RECENT CHAT HISTORY:',
+    'LỊCH SỬ HỘI THOẠI GẦN ĐÂY:',
     historyText,
     '',
-    'Provide agent guidance for the current call. Keep it specific to this customer and this transcript.',
+    'Hãy đưa ra hướng dẫn cho điện thoại viên trong cuộc gọi hiện tại. Câu trả lời phải bám sát khách hàng này và transcript này.',
   ].join('\n');
 }
 
@@ -127,9 +130,9 @@ export async function generateCustomerAdvice({
   conversationHistory = [],
   retrievedContext = [],
 }) {
-  const openai = getOpenAIClient();
+  const gemini = getGeminiClient();
 
-  if (!openai) {
+  if (!gemini) {
     return {
       response: buildFallbackResponse(customerContext),
       metadata: {
@@ -140,33 +143,44 @@ export async function generateCustomerAdvice({
     };
   }
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    temperature: 0.4,
-    max_tokens: 700,
-    messages: [
-      {
-        role: 'system',
-        content: buildSystemPrompt(),
-      },
+  const modelName = 'gemini-2.5-flash';
+  const model = gemini.getGenerativeModel({ model: modelName });
+  const prompt = [
+    buildSystemPrompt(),
+    '',
+    buildUserPrompt({
+      transcript,
+      customerContext,
+      conversationHistory,
+      retrievedContext,
+    }),
+  ].join('\n');
+
+  const result = await model.generateContent({
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 700,
+    },
+    contents: [
       {
         role: 'user',
-        content: buildUserPrompt({
-          transcript,
-          customerContext,
-          conversationHistory,
-          retrievedContext,
-        }),
+        parts: [
+          {
+            text: prompt,
+          },
+        ],
       },
     ],
   });
+  const response = await result.response;
+  const responseText = response.text();
 
   return {
-    response: completion.choices?.[0]?.message?.content || 'No response generated.',
+    response: responseText || 'No response generated.',
     metadata: {
-      model: completion.model || 'gpt-4o-mini',
+      model: modelName,
       usedFallback: false,
-      usage: completion.usage || null,
+      usage: null,
       ragMatches: Array.isArray(retrievedContext) ? retrievedContext.length : 0,
     },
   };

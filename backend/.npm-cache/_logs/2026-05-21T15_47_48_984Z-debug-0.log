@@ -1,0 +1,127 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.12.1
+2 info using node@v24.15.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npmrc
+5 silly config load:file:C:\Users\dauma\.npmrc
+6 silly config load:file:C:\Users\dauma\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npm-cache\_logs\2026-05-21T15_47_48_984Z-
+10 verbose logfile C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npm-cache\_logs\2026-05-21T15_47_48_984Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules
+14 silly idealTree buildDeps
+15 silly fetch manifest chromadb@^1.8.1
+16 silly packumentCache full:https://registry.npmjs.org/chromadb cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/chromadb 248ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/chromadb set size:undefined disposed:false
+19 silly fetch manifest @google/generative-ai@^0.24.1
+20 silly packumentCache full:https://registry.npmjs.org/@google%2fgenerative-ai cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@google%2fgenerative-ai 85ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@google%2fgenerative-ai set size:undefined disposed:false
+23 silly fetch manifest @google/generative-ai@^0.1.1
+24 silly packumentCache full:https://registry.npmjs.org/@google%2fgenerative-ai cache-miss
+25 http cache https://registry.npmjs.org/@google%2fgenerative-ai 7ms (cache hit)
+26 silly packumentCache full:https://registry.npmjs.org/@google%2fgenerative-ai set size:118041 disposed:false
+27 silly fetch manifest cohere-ai@^5.0.0 || ^6.0.0 || ^7.0.0
+28 silly packumentCache full:https://registry.npmjs.org/cohere-ai cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/npm 530ms
+30 http fetch GET 200 https://registry.npmjs.org/cohere-ai 155ms (cache miss)
+31 silly packumentCache full:https://registry.npmjs.org/cohere-ai set size:undefined disposed:false
+32 silly fetch manifest ollama@^0.5.0
+33 silly packumentCache full:https://registry.npmjs.org/ollama cache-miss
+34 http fetch GET 200 https://registry.npmjs.org/ollama 94ms (cache miss)
+35 silly packumentCache full:https://registry.npmjs.org/ollama set size:undefined disposed:false
+36 silly fetch manifest openai@^6.8.1
+37 silly packumentCache full:https://registry.npmjs.org/openai cache-miss
+38 http fetch GET 200 https://registry.npmjs.org/openai 219ms (cache miss)
+39 silly packumentCache full:https://registry.npmjs.org/openai set size:undefined disposed:false
+40 silly fetch manifest openai@^3.0.0 || ^4.0.0
+41 silly packumentCache full:https://registry.npmjs.org/openai cache-miss
+42 http cache https://registry.npmjs.org/openai 24ms (cache hit)
+43 silly packumentCache full:https://registry.npmjs.org/openai set size:4875451 disposed:false
+44 silly fetch manifest ws@^8.18.0
+45 silly packumentCache full:https://registry.npmjs.org/ws cache-miss
+46 http fetch GET 200 https://registry.npmjs.org/ws 149ms (cache miss)
+47 silly packumentCache full:https://registry.npmjs.org/ws set size:undefined disposed:false
+48 silly fetch manifest bufferutil@^4.0.1
+49 silly packumentCache full:https://registry.npmjs.org/bufferutil cache-miss
+50 http fetch GET 200 https://registry.npmjs.org/bufferutil 80ms (cache miss)
+51 silly packumentCache full:https://registry.npmjs.org/bufferutil set size:undefined disposed:false
+52 silly fetch manifest utf-8-validate@>=5.0.2
+53 silly packumentCache full:https://registry.npmjs.org/utf-8-validate cache-miss
+54 http fetch GET 200 https://registry.npmjs.org/utf-8-validate 67ms (cache miss)
+55 silly packumentCache full:https://registry.npmjs.org/utf-8-validate set size:undefined disposed:false
+56 silly fetch manifest zod@^3.25 || ^4.0
+57 silly packumentCache full:https://registry.npmjs.org/zod cache-miss
+58 http fetch GET 200 https://registry.npmjs.org/zod 212ms (cache miss)
+59 silly packumentCache full:https://registry.npmjs.org/zod set size:undefined disposed:false
+60 silly fetch manifest voyageai@^0.0.3-1
+61 silly packumentCache full:https://registry.npmjs.org/voyageai cache-miss
+62 http fetch GET 200 https://registry.npmjs.org/voyageai 77ms (cache miss)
+63 silly packumentCache full:https://registry.npmjs.org/voyageai set size:undefined disposed:false
+64 silly placeDep ROOT chromadb@1.10.5 OK for: sentimind-backend@1.0.0 want: ^1.8.1
+65 silly fetch manifest cliui@^8.0.1
+66 silly packumentCache full:https://registry.npmjs.org/cliui cache-miss
+67 silly fetch manifest isomorphic-fetch@^3.0.0
+68 silly packumentCache full:https://registry.npmjs.org/isomorphic-fetch cache-miss
+69 http fetch GET 200 https://registry.npmjs.org/isomorphic-fetch 88ms (cache miss)
+70 silly packumentCache full:https://registry.npmjs.org/isomorphic-fetch set size:undefined disposed:false
+71 http fetch GET 200 https://registry.npmjs.org/cliui 90ms (cache miss)
+72 silly packumentCache full:https://registry.npmjs.org/cliui set size:undefined disposed:false
+73 silly fetch manifest zod@^3.23.8
+74 silly packumentCache full:https://registry.npmjs.org/zod cache-miss
+75 http cache https://registry.npmjs.org/zod 28ms (cache hit)
+76 silly packumentCache full:https://registry.npmjs.org/zod set size:3552562 disposed:false
+77 verbose stack Error: could not resolve
+77 verbose stack     at PlaceDep.failPeerConflict (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\place-dep.js:503:25)
+77 verbose stack     at new PlaceDep (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\place-dep.js:157:21)
+77 verbose stack     at #buildDepStep (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:933:18)
+77 verbose stack     at async Arborist.buildIdealTree (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:170:7)
+77 verbose stack     at async Promise.all (index 1)
+77 verbose stack     at async Arborist.reify (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:111:5)
+77 verbose stack     at async Install.exec (C:\Program Files\nodejs\node_modules\npm\lib\commands\install.js:146:5)
+77 verbose stack     at async Npm.exec (C:\Program Files\nodejs\node_modules\npm\lib\npm.js:193:9)
+77 verbose stack     at async module.exports (C:\Program Files\nodejs\node_modules\npm\lib\cli\entry.js:67:5)
+78 error code ERESOLVE
+79 error ERESOLVE could not resolve
+80 error
+81 error While resolving: chromadb@1.10.5
+81 error Found: @google/generative-ai@0.24.1
+81 error node_modules/@google/generative-ai
+81 error   @google/generative-ai@"^0.24.1" from the root project
+81 error
+81 error Could not resolve dependency:
+81 error peerOptional @google/generative-ai@"^0.1.1" from chromadb@1.10.5
+81 error node_modules/chromadb
+81 error   chromadb@"^1.8.1" from the root project
+81 error
+81 error Conflicting peer dependency: @google/generative-ai@0.1.3
+81 error node_modules/@google/generative-ai
+81 error   peerOptional @google/generative-ai@"^0.1.1" from chromadb@1.10.5
+81 error   node_modules/chromadb
+81 error     chromadb@"^1.8.1" from the root project
+81 error
+81 error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+82 error
+82 error
+82 error For a full report see:
+82 error C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npm-cache\_logs\2026-05-21T15_47_48_984Z-eresolve-report.txt
+83 silly unfinished npm timer reify 1779378469272
+84 silly unfinished npm timer reify:loadTrees 1779378469272
+85 silly unfinished npm timer idealTree:buildDeps 1779378469307
+86 silly unfinished npm timer idealTree:node_modules/chromadb 1779378470982
+87 verbose cwd C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend
+88 verbose os Windows_NT 10.0.26200
+89 verbose node v24.15.0
+90 verbose npm  v11.12.1
+91 notice
+91 notice New minor version of npm available! 11.12.1 -> 11.15.0
+91 notice Changelog: https://github.com/npm/cli/releases/tag/v11.15.0
+91 notice To update run: npm install -g npm@11.15.0
+91 notice  { force: true, Symbol(proc-log.meta): true }
+92 verbose exit 1
+93 verbose code 1
+94 error A complete log of this run can be found in: C:\Users\dauma\OneDrive\Documents\FYT\CSC-main\backend\.npm-cache\_logs\2026-05-21T15_47_48_984Z-debug-0.log

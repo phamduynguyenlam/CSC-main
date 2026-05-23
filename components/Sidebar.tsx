@@ -8,6 +8,7 @@ import {
   TrendUpIcon,
   LightbulbIcon,
 } from './icons/Icons';
+import BrandLogo from './BrandLogo';
 
 interface SidebarProps {
   view: View;
@@ -18,13 +19,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isDarkMode = false }) => {
-  // choose logo based on theme
-  const logoSrc = isDarkMode ? '/logo-full-dark.png' : '/logo-full.png';
-    
+  void isDarkMode;
+
   const handleItemClick = (newView: View) => {
     setView(newView);
-    if (window.innerWidth < 768) { // md breakpoint
-        setIsOpen(false);
+    if (window.innerWidth < 768) {
+      setIsOpen(false);
     }
   };
 
@@ -50,29 +50,12 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
   return (
     <>
       <div className={sidebarClasses}>
-        {/* Logo Section */}
-        <div className="flex-shrink-0 px-3 py-3 relative">
-          <img
-            src={logoSrc}
-            alt="SenseAI Logo"
-            className="w-2/3 h-auto object-contain mx-auto"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'flex';
-            }}
-          />
-          {/* Fallback logo if image not found */}
-          <div className="w-full h-16 items-center justify-center text-center overflow-hidden hidden"
-               style={{
-                 background: 'radial-gradient(circle at 30% 30%, #ffffff 0%, #90e0ef 40%, #00b4d8 70%, #0077b6 100%)',
-                 boxShadow: '0 4px 12px rgba(0, 119, 182, 0.3)'
-               }}>
-            <div className="text-4xl">🍵</div>
+        <div className="flex-shrink-0 px-3 py-4">
+          <div className="flex items-center justify-center">
+            <BrandLogo className="h-auto w-24 text-black dark:text-white" />
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = view === item.id;
@@ -94,11 +77,13 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
           })}
         </nav>
 
-        {/* Footer */}
         <div className="p-4 border-t border-gray-200 dark:border-white/10">
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => { setView('profile'); if (window.innerWidth < 768) setIsOpen(false); }}
+              onClick={() => {
+                setView('profile');
+                if (window.innerWidth < 768) setIsOpen(false);
+              }}
               title="Open profile"
               aria-label="Open profile"
               className="w-8 h-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-offset-1 hover:ring-gray-200 dark:hover:ring-[#00b4d8] focus:outline-none"
@@ -107,7 +92,10 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
             </button>
             <div className="flex-1 min-w-0">
               <button
-                onClick={() => { setView('profile'); if (window.innerWidth < 768) setIsOpen(false); }}
+                onClick={() => {
+                  setView('profile');
+                  if (window.innerWidth < 768) setIsOpen(false);
+                }}
                 className="w-full text-left focus:outline-none"
               >
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">Nguyễn Văn Nam</p>
@@ -118,10 +106,9 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
         </div>
       </div>
 
-      {/* Overlay for mobile */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden" 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

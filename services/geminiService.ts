@@ -255,9 +255,9 @@ export async function analyzeTranscriptForSuggestions(
                 'Lắng nghe tích cực và ghi nhận mối bận tâm của khách hàng'
             ],
             phraseExamples: data.phraseExamples || [
-                'I understand your concern and I am here to help',
-                'Let me look into this for you right away',
-                'I can see why this would be frustrating'
+                'Tôi hiểu mối quan tâm của anh/chị và tôi đang ở đây để hỗ trợ.',
+                'Để tôi kiểm tra ngay cho anh/chị.',
+                'Tôi hiểu vì sao tình huống này khiến anh/chị khó chịu.'
             ],
             warningFlags: data.warningFlags || []
         };
@@ -278,9 +278,9 @@ export async function analyzeTranscriptForSuggestions(
                 'Tập trung vào việc đưa ra các giải pháp rõ ràng và có thể thực hiện ngay'
             ],
             phraseExamples: [
-                'I understand your situation',
-                'Let me help you with that',
-                'Thank you for bringing this to my attention'
+                'Tôi hiểu tình huống của anh/chị.',
+                'Để tôi hỗ trợ anh/chị việc này.',
+                'Cảm ơn anh/chị đã thông báo để tôi kiểm tra.'
             ],
             warningFlags: ['Giám sát tính khả dụng của dịch vụ']
         };
