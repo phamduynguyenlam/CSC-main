@@ -1,7 +1,7 @@
 
-### ⚡ Setup (5 minutes)
+### ⚡ Setup (5 phút)
 
-#### 1. Clone and Install
+#### 1. Clone và cài đặt
 ```bash
 git clone https://github.com/phamduynguyenlam/CSC-main.git
 cd CSC-main
@@ -9,15 +9,15 @@ npm install
 cd backend && npm install
 ```
 
-#### 2. Set Up API Keys (REQUIRED)
+#### 2. Setup API Keys 
 ```bash
 # Copy the environment template
 cp backend/.env.example backend/.env
 ```
 
-**Edit `backend/.env` with your API keys:**
+**Chỉnh `backend/.env` với API keys của bạn:**
 ```bash
-# Get from https://platform.openai.com/account/api-keys
+# Get from https://platform.openai.com/account/api-keys (Optional)
 OPENAI_API_KEY=sk-proj-your-actual-openai-key-here
 
 # Get from https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/
@@ -34,12 +34,12 @@ PORT=3001
 NODE_ENV=development
 ```
 
-#### 2b. Database and Vector Store (for call memory + RAG)
+#### 2b. Database and Vector Store (cho RAG + sử dụng lịch sử cuộc gọi)
 - Configure MySQL connection in `backend/.env` (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
 - Run the schema in `backend/database/customer_care_schema.sql`.
 - Start Chroma (example): `chroma run --path ./chroma` or a Docker container on port 8000.
 
-#### 3. Start the Application
+#### 3. Khởi chạy ứng dụng
 ```bash
 # Terminal 1: Start backend
 cd backend && npm start
@@ -47,26 +47,7 @@ cd backend && npm start
 # Terminal 2: Start frontend  
 npm run dev
 ```
-
-### 🔑 API Key Setup Help
-
-**OpenAI API Key (Required for AI Chat):**
-- Sign up at [OpenAI Platform](https://platform.openai.com/account/api-keys)
-- Create new API key (starts with `sk-proj-`)
-- Add billing method (pay-per-use, very affordable)
-
-**Google Gemini API Key (Optional):**
-- Visit [Google AI Studio](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/)
-- Enable Generative Language API
-- Create API key (starts with `AIza`)
-
-### 🆘 Troubleshooting
-
-**"OpenAI not working":** Check your API key format and billing setup
-**"Port already in use":** Kill existing processes: `pkill -f node`
-**"Module not found":** Run `npm install` in both main and backend folders
-
-### 1. Set up environment variables
+### 1. Cài đặt các biến môi trường
 Create a `.env` file in the `backend` folder with your Google Gemini API key:
 ```bash
 # Copy the example file
@@ -79,7 +60,7 @@ PORT=3001
 NODE_ENV=development
 ```
 
-### 2. Install dependencies and start the application
+### 2. Cài đặt các dependencies và khởi động ứng dụng
 ```bash
 # Install backend dependencies
 cd backend && npm install
@@ -94,31 +75,8 @@ cd backend && npm start
 cd .. && npm run dev
 ```
 
-### 3. Access the application
-- **Frontend Dashboard**: http://localhost:5176 (or next available port)
+### 3. Truy cập ứng dụng
+- **Frontend Dashboard**: http://localhost:5173 
 - **Backend API**: http://localhost:3001
 - **API Health Check**: http://localhost:3001/api/health
-
-
-## API Endpoints
-
-- `GET /api/health` - Health check
-- `POST /api/gemini/analyze-transcript` - Analyze customer transcript
-- `POST /api/gemini/assistant` - AI assistant responses
-- `GET /api/dashboard/overview` - Dashboard data
-- `GET /api/dashboard/live-updates` - Real-time updates
-
-## Technology Stack
-
-### Frontend
-- React 18 with TypeScript
-- Vite for build tooling
-- Recharts for data visualization
-- Socket.IO client for real-time features
-
-### Backend
-- Node.js with Express
-- Socket.IO for real-time communication
-- Google Generative AI for sentiment analysis
-- CORS and security middleware
 
