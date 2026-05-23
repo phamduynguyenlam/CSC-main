@@ -37,7 +37,11 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { analyzeTranscriptForSuggestions, SentimentAnalysis } from '../services/geminiService';
+import {
+  analyzeTranscriptForSuggestions,
+  getCustomerAssistResponse,
+  SentimentAnalysis,
+} from '../services/geminiService';
 
 /**
  * Fast Local Sentiment Analyzer
@@ -1020,16 +1024,35 @@ const LiveAnalysisView: React.FC = () => {
 
 
     try {
-      const analysis = await analyzeTranscriptForSuggestions(text, {
-        phoneNumber: getCallDetails(selectedCall || 'live-analysis')?.phoneNumber
-      });
-      
-      // Get local coaching as fallback or enhancement
-      const localCoaching = getLocalCoachingSuggestions(analysis.emotion, analysis.sentimentScore || 5);
+      const activeCallDetails = getCallDetails(selectedCall || 'live-analysis');
+      const [analysisResult, assistResult] = await Promise.allSettled([
+        analyzeTranscriptForSuggestions(text, {
+          phoneNumber: activeCallDetails?.phoneNumber
+        }),
+        activeCallDetails?.customerId
+          ? getCustomerAssistResponse({
+              transcript: text,
+              customerId: activeCallDetails.customerId
+            })
+          : Promise.resolve(null)
+      ]);
+
+      if (analysisResult.status !== 'fulfilled') {
+        throw analysisResult.reason;
+      }
+
+      const analysis = analysisResult.value;
+      const mergedSuggestion =
+        assistResult.status === 'fulfilled' && assistResult.value?.response
+          ? assistResult.value.response.trim()
+          : analysis.suggestion;
       
       // Update cache
       const newCache = new Map(audioState.analysisCache);
-      newCache.set(text, analysis);
+      newCache.set(text, {
+        ...analysis,
+        suggestion: mergedSuggestion
+      });
       if (newCache.size > 50) { // Limit cache size
         const firstKey = newCache.keys().next().value;
         newCache.delete(firstKey!);
@@ -1038,7 +1061,7 @@ const LiveAnalysisView: React.FC = () => {
       setAudioState(prev => ({
         ...prev,
         emotion: analysis.emotion,
-        currentSuggestion: `✅ ${analysis.suggestion}`, // Add checkmark to show completed analysis
+        currentSuggestion: `✅ ${mergedSuggestion}`,
         sentiment: analysis.sentimentScore || prev.sentiment,
         intensity: analysis.intensity || 'Trung bình',
         keyIndicators: analysis.keyIndicators || [],
@@ -1196,6 +1219,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'live-analysis') {
       return {
         name: 'Live Audio Analysis',
+        customerId: 1,
         phoneNumber: '0901234567',
         status: audioState.isRecording ? 'Active' : 'Stopped',
         transcript: audioState.transcript,
@@ -1209,6 +1233,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'nmtuan') {
       return {
         name: 'Nguyễn Minh Tuấn',
+        customerId: 2,
         phoneNumber: '0912345678',
         status: 'Bực bội',
         transcript: [
@@ -1224,6 +1249,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'ndluong') {
       return {
         name: 'Nguyễn Đức Lương',
+        customerId: 3,
         phoneNumber: '0933456789',
         status: 'Lo lắng',
         transcript: [
@@ -1239,6 +1265,7 @@ const LiveAnalysisView: React.FC = () => {
     if (callId === 'htphuong') {
       return {
         name: 'Hoàng Thị Phương',
+        customerId: 4,
         phoneNumber: '0944567890',
         status: 'Bực bội',
         transcript: [
