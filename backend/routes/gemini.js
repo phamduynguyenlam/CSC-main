@@ -677,7 +677,7 @@ router.post('/analyze-transcript', async (req, res) => {
 
     try {
       // Initialize Google Gemini AI model
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
       // ULTRA-ADVANCED sentiment analysis prompt with extensive training examples
       const unusedPrompt = `
@@ -893,7 +893,7 @@ router.post('/ask', async (req, res) => {
     // First, analyze the user's message sentiment
     const sentimentAnalysis = analyzeTextSentiment(message);
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     // Enhanced system instruction with sentiment awareness and business context
     const systemInstruction = `
@@ -1001,7 +1001,7 @@ Please respond as SenseAI, taking into account the user's current sentiment (${s
       },
       metadata: {
         timestamp: new Date().toISOString(),
-        model: 'gemini-1.0-pro',
+        model: 'gemini-2.5-flash',
         responseLength: aiResponse.length,
         conversationLength: conversationHistory.length + 1
       }
@@ -1066,7 +1066,7 @@ router.post('/assistant', async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     // System instruction for consistent AI assistant behavior
     const systemInstruction = `

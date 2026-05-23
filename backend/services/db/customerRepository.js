@@ -185,3 +185,54 @@ export default {
   getCustomerContextByCustomerId,
   getCustomerContextByPhoneNumber,
 };
+
+
+import pool from './mysql.js';
+
+export async function saveCallInsight(transcript, insight) {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS call_insights (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        transcript TEXT,
+        summary TEXT,
+        customer_intent TEXT,
+        main_issue TEXT,
+        root_cause TEXT,
+        sentiment_score INT,
+        risk_level VARCHAR(50),
+        follow_up_needed TINYINT(1),
+        action_items TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // 2. Câu lệnh SQL để chèn dữ liệu vào bảng
+    const sql = `
+      INSERT INTO call_insights
+      (transcript, summary, customer_intent, main_issue, root_cause, sentiment_score, risk_level, follow_up_needed, action_items)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    // Vì action_items là một mảng (Array), MySQL không lưu trực tiếp được nên ta phải dùng JSON.stringify để biến nó thành chuỗi text
+    const values = [
+      transcript,
+      insight.summary,
+      insight.customer_intent,
+      insight.main_issue,
+      insight.root_cause,
+      insight.sentiment_score,
+      insight.risk_level,
+      insight.follow_up_needed ? 1 : 0,
+      JSON.stringify(insight.action_items)
+    ];
+
+    // 3. Thực thi lệnh lưu vào MySQL
+    await pool.query(sql, values);
+    console.log("💾 [Database] Đã lưu thành công kết quả trích xuất Insight vào MySQL!");
+
+  } catch (error) {
+    console.error("❌ Lỗi khi lưu Insight vào Database:", error);
+    // Không throw error để nếu DB có tạch thì API vẫn trả kết quả về cho Frontend không bị sập app
+  }
+}

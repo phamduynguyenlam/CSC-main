@@ -14,7 +14,7 @@ const AssistantPopup: React.FC = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             sender: 'ai',
-            text: "Hello! I'm Insight, your CX assistant. Ask me to generate a SWOT analysis, summarize feedback, or explain market trends."
+            text: "Xin chào! Tôi là trợ lý CX của bạn. Hãy yêu cầu tôi tạo phân tích SWOT, tóm tắt phản hồi hoặc giải thích xu hướng thị trường."
         }
     ]);
     const [input, setInput] = useState('');
@@ -80,8 +80,6 @@ const AssistantPopup: React.FC = () => {
     
     const renderMessageContent = (text: string) => {
         const parseInlineMarkdown = (inlineText: string) => {
-            // Regex to find **bold**, *italic*, ~~strikethrough~~, or `code`.
-            // Non-greedy and avoids nesting issues for this simple parser.
             const markdownRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|~~[^~]+~~|`[^`]+`)/g;
             const parts = inlineText.split(markdownRegex).filter(Boolean);
 
@@ -96,7 +94,7 @@ const AssistantPopup: React.FC = () => {
                     return <del key={i}>{part.slice(2, -2)}</del>;
                 }
                 if (part.startsWith('`') && part.endsWith('`')) {
-                    return <code key={i} className="bg-bg-tertiary text-accent-teal px-1 py-0.5 rounded text-sm">{part.slice(1, -1)}</code>;
+                    return <code key={i} className="bg-slate-100 dark:bg-[#0077b6] text-[#00b4d8] px-1 py-0.5 rounded text-sm">{part.slice(1, -1)}</code>;
                 }
                 return part;
             });
@@ -113,7 +111,6 @@ const AssistantPopup: React.FC = () => {
 
             if (unorderedListRegex.test(line)) {
                 const listItems = [];
-                // Group consecutive unordered list items
                 while (i < lines.length && unorderedListRegex.test(lines[i].trim())) {
                     const content = lines[i].trim().substring(2);
                     listItems.push(<li key={i} className="ml-5 list-disc">{parseInlineMarkdown(content)}</li>);
@@ -125,7 +122,6 @@ const AssistantPopup: React.FC = () => {
 
             if (orderedListRegex.test(line)) {
                 const listItems = [];
-                // Group consecutive ordered list items
                 while (i < lines.length && orderedListRegex.test(lines[i].trim())) {
                     const content = lines[i].trim().replace(orderedListRegex, '');
                     listItems.push(<li key={i} className="ml-5 list-decimal">{parseInlineMarkdown(content)}</li>);
@@ -135,11 +131,10 @@ const AssistantPopup: React.FC = () => {
                 continue;
             }
 
-            // Handle headings (full-line bold)
             if (line.startsWith('**') && line.endsWith('**')) {
                 const cleanText = line.slice(2, -2).trim();
                 elements.push(<p key={i} className="font-bold my-2">{cleanText}</p>);
-            } else if (line !== '') { // Handle paragraphs
+            } else if (line !== '') {
                 elements.push(<p key={i} className="my-1">{parseInlineMarkdown(line)}</p>);
             }
             
@@ -149,12 +144,11 @@ const AssistantPopup: React.FC = () => {
         return elements;
     };
 
-
     const popupClasses = `
         fixed bottom-20 right-4 md:right-8
         w-[calc(100%-2rem)] max-w-md
         h-[70vh] max-h-[500px]
-        bg-bg-secondary border border-bg-tertiary/50 rounded-2xl shadow-xl
+        bg-white dark:bg-[#0A2540] border border-gray-200 dark:border-[#00b4d8]/50 rounded-2xl shadow-xl
         flex flex-col
         transition-all duration-300 ease-in-out
         ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}
@@ -164,17 +158,17 @@ const AssistantPopup: React.FC = () => {
         <>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-4 right-4 md:right-8 z-50 w-14 h-14 bg-brand-primary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-brand-secondary transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-primary/50"
-                aria-label="Toggle AI Assistant"
+                className="fixed bottom-4 right-4 md:right-8 z-50 w-14 h-14 bg-[#0077b6] rounded-full shadow-md flex items-center justify-center text-white hover:bg-[#00b4d8] transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#0077b6]/50"
+                aria-label="Bật/tắt Trợ lý AI"
             >
                 <LightbulbIcon className="w-7 h-7" />
             </button>
 
             <div className={popupClasses} style={{ zIndex: 40 }}>
                 {/* Header */}
-                <div className="flex items-center p-4 border-b border-bg-tertiary/50 flex-shrink-0">
-                    <LogoIcon className="w-6 h-6 text-brand-secondary" />
-                    <h3 className="ml-3 text-lg font-bold text-text-primary">Insight Assistant</h3>
+                <div className="flex items-center p-4 border-b border-gray-200 dark:border-[#00b4d8]/50 flex-shrink-0">
+                    <LogoIcon className="w-6 h-6 text-[#00b4d8]" />
+                    <h3 className="ml-3 text-lg font-bold text-text-primary">Trợ lý AI</h3>
                     <button onClick={() => setIsOpen(false)} className="ml-auto text-text-secondary hover:text-text-primary text-2xl font-bold">&times;</button>
                 </div>
 
@@ -182,16 +176,16 @@ const AssistantPopup: React.FC = () => {
                 <div className="flex-1 p-4 overflow-y-auto space-y-4">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                            {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-brand-secondary/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-brand-secondary"/></div>}
-                            <div className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl ${msg.sender === 'user' ? 'bg-brand-primary text-white rounded-br-none' : 'bg-bg-tertiary text-text-primary rounded-bl-none'}`}>
+                            {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-[#00b4d8]/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-[#00b4d8]"/></div>}
+                            <div className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl ${msg.sender === 'user' ? 'bg-[#0077b6] text-white rounded-br-none' : 'bg-slate-100 dark:bg-[#0077b6] text-text-primary rounded-bl-none'}`}>
                                 {renderMessageContent(msg.text)}
                             </div>
                         </div>
                     ))}
                     {isLoading && (
                         <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-full bg-brand-secondary/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-brand-secondary"/></div>
-                            <div className="max-w-xs md:max-w-sm px-4 py-2 rounded-2xl bg-bg-tertiary text-text-primary rounded-bl-none">
+                            <div className="w-8 h-8 rounded-full bg-[#00b4d8]/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-[#00b4d8]"/></div>
+                            <div className="max-w-xs md:max-w-sm px-4 py-2 rounded-2xl bg-slate-100 dark:bg-[#0077b6] text-text-primary rounded-bl-none">
                                 <div className="flex items-center space-x-2">
                                     <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse delay-75"></span>
                                     <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse delay-150"></span>
@@ -204,17 +198,17 @@ const AssistantPopup: React.FC = () => {
                 </div>
                 
                 {/* Input Form */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-bg-tertiary/50 flex-shrink-0">
-                    <div className="flex items-center bg-bg-tertiary rounded-lg">
+                <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-[#00b4d8]/50 flex-shrink-0">
+                    <div className="flex items-center bg-slate-100 dark:bg-[#0077b6] rounded-lg">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask me anything..."
+                            placeholder="Hỏi tôi bất cứ điều gì..."
                             className="w-full bg-transparent px-4 py-2 focus:outline-none text-text-primary"
                             disabled={isLoading}
                         />
-                        <button type="submit" className="p-2 text-brand-primary disabled:text-text-secondary/50" disabled={isLoading || !input.trim()}>
+                        <button type="submit" className="p-2 text-[#0077b6] disabled:text-text-secondary/50" disabled={isLoading || !input.trim()}>
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
                         </button>
                     </div>
