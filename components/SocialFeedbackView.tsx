@@ -38,9 +38,9 @@ const SocialFeedbackView: React.FC = () => {
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return 'text-green-500 bg-[#52b788]/10 dark:bg-[#52b788]/20';
-      case 'negative': return 'text-red-500 bg-[#e63946]/10 dark:bg-[#e63946]/20';
-      default: return 'text-orange-500 bg-[#f4a261]/10 dark:bg-[#f4a261]/20';
+      case 'positive': return 'text-green-500 bg-green-600/10 dark:bg-green-600/20';
+      case 'negative': return 'text-red-500 bg-red-600/10 dark:bg-red-600/20';
+      default: return 'text-yellow-500 bg-yellow-400/10 dark:bg-yellow-400/20';
     }
   };
 
@@ -54,9 +54,9 @@ const SocialFeedbackView: React.FC = () => {
 
   const getSentimentDot = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return 'bg-[#52b788]';
-      case 'negative': return 'bg-[#e63946]';
-      default: return 'bg-[#f4a261]';
+      case 'positive': return 'bg-green-600';
+      case 'negative': return 'bg-red-600';
+      default: return 'bg-yellow-400';
     }
   };
 

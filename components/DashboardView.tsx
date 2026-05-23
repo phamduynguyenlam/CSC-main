@@ -26,13 +26,13 @@ const DashboardView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Live Updates - Marquee Ticker */}
-      <div className="mb-6 bg-gradient-to-r from-[#aca8ff] to-[#668aff]  rounded-lg shadow-md p-3 flex items-center">
-        <span className="bg-white text-blue-800 px-2 py-1 rounded text-sm font-semibold mr-4">LIVE</span>
+      <div className="mb-6 bg-gradient-to-r from-slate-200 to-slate-400 rounded-lg shadow-md p-3 flex items-center">
+        <span className="bg-secondary text-foreground px-2 py-1 rounded text-sm font-semibold mr-4">LIVE</span>
         <div className="overflow-hidden flex-1">
           <div className="flex animate-marquee whitespace-nowrap">
             <div className="flex space-x-8">
               {liveUpdates.map((update, index) => (
-                <span key={index} className="text-md text-white font-medium">
+                <span key={index} className="text-md text-foreground font-medium">
                   {update}
                 </span>
               ))}
@@ -108,23 +108,23 @@ const DashboardView: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sentiment Trends</h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={sentimentData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="gray" opacity={0.3} />
-              <XAxis dataKey="name" stroke="gray"/>
-              <YAxis domain={[6, 10]} stroke="gray"/>
+              <CartesianGrid strokeDasharray="3 3" stroke="#a3a3a3" opacity={0.3} />
+              <XAxis dataKey="name" stroke="#737373"/>
+              <YAxis domain={[6, 10]} stroke="#737373"/>
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#0A2540', 
+                  backgroundColor: '#262626', 
                   border: 'none', 
                   borderRadius: '0.5rem',
-                  color: 'white'
+                  color: '#FAFAFA'
                 }} 
               />
               <Line 
                 type="monotone" 
                 dataKey="score" 
-                stroke="#668aff" 
+                stroke="#262626" 
                 strokeWidth={3} 
-                dot={{ fill: '#668aff', strokeWidth: 2, r: 4 }}
+                dot={{ fill: '#262626', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>

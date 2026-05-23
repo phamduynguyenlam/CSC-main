@@ -769,14 +769,14 @@ const LiveAnalysisView: React.FC = () => {
       case 'Hài lòng': 
       case 'Trân trọng': 
       case 'Hào hứng': 
-      case 'Vui vẻ': return 'text-green-500 dark:text-green-400 bg-[#52b788]/10 dark:bg-[#52b788]/30';
+      case 'Vui vẻ': return 'text-green-500 dark:text-green-400 bg-green-600/10 dark:bg-green-600/30';
   
       case 'Tiêu cực':
       case 'Thất vọng':
       case 'Ghê tởm':
-      case 'Bực bội': return 'text-red-500 dark:text-red-400 bg-[#e63946]/10 dark:bg-[#e63946]/30';
+      case 'Bực bội': return 'text-red-500 dark:text-red-400 bg-red-600/10 dark:bg-red-600/30';
 
-      default: return 'text-orange-500 dark:text-orange-400 bg-[#f4a261]/10 dark:bg-[#f4a261]/30';
+      default: return 'text-yellow-500 dark:text-yellow-400 bg-yellow-400/10 dark:bg-yellow-400/30';
     }
   };
 
@@ -793,7 +793,7 @@ const LiveAnalysisView: React.FC = () => {
     switch (risk) {
       case 'Thấp': return 'text-green-600 dark:text-green-400';
       case 'Cao': return 'text-red-500 dark:text-green-400';
-      default: return 'text-orange-500';
+      default: return 'text-yellow-500';
     }
   };
 
@@ -1305,9 +1305,9 @@ const LiveAnalysisView: React.FC = () => {
                 <div className="flex items-center space-x-4">
                   {call.id === 'live-analysis' ? (
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      audioState.isRecording ? 'bg-[#e63946]/10 dark:bg-[#e63946]/30' : 'bg-slate-300 dark:bg-slate-700'
+                      audioState.isRecording ? 'bg-red-600/10 dark:bg-red-600/30' : 'bg-slate-300 dark:bg-slate-700'
                     }`}>
-                      <svg className={`w-5 h-5 ${audioState.isRecording ? 'text-[#e63946] dark:text-[#e63946]' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-5 h-5 ${audioState.isRecording ? 'text-red-600 dark:text-red-600' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
                     </div>
@@ -1348,7 +1348,7 @@ const LiveAnalysisView: React.FC = () => {
                 {selectedCallDetails.isLive ? 'Phân tích trực tiếp  ' : `Cuộc gọi với ${selectedCallDetails.name}  `}
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 ${
                   selectedCallDetails.isLive 
-                    ? (audioState.isRecording ? 'bg-[#e63946]/10 dark:bg-[#e63946]/20 text-[#e63946] dark:text-[#e63946]' : 'bg-slate-50 dark:bg-slate-900/20 text-gray-600 dark:text-gray-400')
+                    ? (audioState.isRecording ? 'bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-600' : 'bg-slate-50 dark:bg-slate-900/20 text-gray-600 dark:text-gray-400')
                     : (getSentimentColor(selectedCallDetails.status))
                   }`}>
                   {selectedCallDetails.status}
@@ -1391,7 +1391,7 @@ const LiveAnalysisView: React.FC = () => {
                         <span className="text-sm text-gray-600 dark:text-gray-400">Mức âm thanh:</span>
                         <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-[#52b788] transition-all duration-100"
+                            className="h-full bg-green-600 transition-all duration-100"
                             style={{ width: `${audioState.audioLevel * 100}%` }}
                           />
                         </div>
@@ -1407,11 +1407,11 @@ const LiveAnalysisView: React.FC = () => {
                         <div className="text-lg font-semibold text-gray-900 dark:text-white">{audioState.emotion}</div>
                         {audioState.warmupMode && (
                           <div className="flex items-center space-x-1">
-                            <div className="w-2 h-2 bg-[#f4a261] rounded-full animate-pulse"></div>
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                           </div>
                         )}
                         {audioState.isAnalyzing && !audioState.warmupMode && (
-                          <div className="w-2 h-2 bg-[#0077b6] rounded-full animate-pulse"></div>
+                          <div className="w-2 h-2 bg-blue-700 rounded-full animate-pulse"></div>
                         )}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">Cường độ: {audioState.intensity}</div>
@@ -1421,7 +1421,7 @@ const LiveAnalysisView: React.FC = () => {
                       <div className="text-lg font-semibold text-gray-900 dark:text-white">
                         {audioState.sentiment.toFixed(1)}/10
                       </div>
-                      <div className={`text-xs font-medium ${audioState.priority === 'Cao' ? 'text-[#e63946]' : audioState.priority === 'Trung bình' ? 'text-[#f4a261]' : 'text-[#52b788]'}`}>
+                      <div className={`text-xs font-medium ${audioState.priority === 'Cao' ? 'text-red-600' : audioState.priority === 'Trung bình' ? 'text-yellow-400' : 'text-green-600'}`}>
                         Ưu tiên: {audioState.priority}
                       </div>
                     </div>
@@ -1446,7 +1446,7 @@ const LiveAnalysisView: React.FC = () => {
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Chỉ số cảm xúc chính:</span>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {audioState.keyIndicators.map((word, index) => (
-                          <span key={index} className="px-2 py-1 bg-[#0077b6]/10 dark:bg-[#0077b6]/30 text-[#0077b6] dark:text-[#00b4d8] text-xs rounded">
+                          <span key={index} className="px-2 py-1 bg-blue-700/10 dark:bg-blue-700/30 text-blue-700 dark:text-sky-400 text-xs rounded">
                             {word}
                           </span>
                         ))}
@@ -1455,8 +1455,8 @@ const LiveAnalysisView: React.FC = () => {
                   )}
 
                   {audioState.error && (
-                    <div className="mb-4 p-3 bg-[#e63946]/10 dark:bg-[#e63946]/20 border border-[#e63946]/40 dark:border-[#e63946]/40 rounded-lg">
-                      <p className="text-sm text-[#e63946] dark:text-[#e63946]">{audioState.error}</p>
+                    <div className="mb-4 p-3 bg-red-600/10 dark:bg-red-600/20 border border-red-600/40 dark:border-red-600/40 rounded-lg">
+                      <p className="text-sm text-red-600 dark:text-red-600">{audioState.error}</p>
                     </div>
                   )}
                 </div>
@@ -1471,10 +1471,10 @@ const LiveAnalysisView: React.FC = () => {
                   <div 
                     className={`h-2 rounded-full transition-all duration-500 ${
                       selectedCallDetails.sentiment < 5
-                        ? 'bg-[#e63946]'
+                        ? 'bg-red-600'
                         : selectedCallDetails.sentiment < 8
-                        ? 'bg-[#f4a261]'
-                        : 'bg-[#52b788]'
+                        ? 'bg-yellow-400'
+                        : 'bg-green-600'
                     }`}
                     style={{width: `${(selectedCallDetails.sentiment / 10) * 100}%`}}
                   />
@@ -1498,9 +1498,9 @@ const LiveAnalysisView: React.FC = () => {
                     selectedCallDetails.transcript.map((entry, index) => (
                       <div key={index} className="text-sm">
                         <span className={`font-medium ${
-                          entry.speaker === 'Customer' ? 'text-[#0077b6] dark:text-[#00b4d8]' : 
-                          entry.speaker === 'Live' ? 'text-[#0077b6] dark:text-[#00b4d8]' :
-                          'text-[#52b788] dark:text-[#52b788]'
+                          entry.speaker === 'Customer' ? 'text-blue-700 dark:text-sky-400' : 
+                          entry.speaker === 'Live' ? 'text-blue-700 dark:text-sky-400' :
+                          'text-green-600 dark:text-green-600'
                         }`}>
                           {entry.speaker}
                           {entry.timestamp && (
@@ -1526,7 +1526,7 @@ const LiveAnalysisView: React.FC = () => {
             
             <div className="p-6 space-y-4">
               {/* Current AI Suggestion */}
-              <div className="bg-blue-50 dark:bg-sky-900/40 border border-[#0077b6]/40 dark:border-[#0077b6]/50 rounded-xl p-4">
+              <div className="bg-blue-50 dark:bg-sky-900/40 border border-blue-700/40 dark:border-blue-700/50 rounded-xl p-4">
                 <h4 className="text-lg font-medium text-blue-600 dark:text-sky-400 mb-1">
                   {audioState.isAnalyzing ? 'Đang phân tích...' : 'Kết quả phân tích'}
                 </h4>
@@ -1536,11 +1536,11 @@ const LiveAnalysisView: React.FC = () => {
               </div>
               
               {/* Real-time Coaching Suggestions */}
-              <div className="bg-[#f4a261]/10 dark:bg-[#f4a261]/20 border border-[#f4a261]/40 dark:border-[#f4a261]/50 rounded-xl p-4">
+              <div className="bg-yellow-400/10 dark:bg-yellow-400/20 border border-yellow-400/40 dark:border-yellow-400/50 rounded-xl p-4">
                 <div className="flex items-center space-x-2 mb-3">
-                  <h4 className="text-lg font-medium text-orange-500 dark:text-orange-500">Hướng dẫn nhân viên</h4>
+                  <h4 className="text-lg font-medium text-yellow-500 dark:text-yellow-500">Hướng dẫn nhân viên</h4>
                   <div className="group relative">
-                    <svg className="w-4 h-4 text-[#f4a261] hover:text-[#f4a261] cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-yellow-400 hover:text-yellow-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
@@ -1551,11 +1551,11 @@ const LiveAnalysisView: React.FC = () => {
                 <div className="space-y-3 text-sm">
                   {/* Coaching Tips */}
                   <div>
-                    <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Cần làm:</h5>
-                    <ul className="text-orange-900 dark:text-orange-100 space-y-1">
+                    <h5 className="text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-2">Cần làm:</h5>
+                    <ul className="text-yellow-900 dark:text-yellow-100 space-y-1">
                       {audioState.coachingTips.map((tip, index) => (
                         <li key={index} className="flex items-start space-x-2">
-                          <span className="text-[#f4a261] mt-0.5">•</span>
+                          <span className="text-yellow-400 mt-0.5">•</span>
                           <span>{tip}</span>
                         </li>
                       ))}
@@ -1564,15 +1564,15 @@ const LiveAnalysisView: React.FC = () => {
 
                   {/* Example Phrases */}
                   <div>
-                    <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Gợi ý câu nói:</h5>
+                    <h5 className="text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-2">Gợi ý câu nói:</h5>
                     <div className="space-y-2">
                       {audioState.phraseExamples.map((phrase, index) => (
                         <div key={index} className="group relative">
-                          <div className="bg-white dark:bg-slate-800 border border-[#f4a261]/40 dark:border-[#f4a261] rounded-xl p-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#f4a261]/10 dark:hover:bg-[#f4a261]/10 cursor-pointer transition-colors">
+                          <div className="bg-white dark:bg-slate-800 border border-yellow-400/40 dark:border-yellow-400 rounded-xl p-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-400/10 dark:hover:bg-yellow-400/10 cursor-pointer transition-colors">
                             <div className="flex items-center justify-between">
                               <span>"{phrase}"</span>
                               <button 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity text-[#f4a261] hover:text-[#f4a261]"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity text-yellow-400 hover:text-yellow-400"
                                 onClick={() => navigator.clipboard.writeText(phrase)}
                                 title="Sao chép"
                               >
@@ -1590,11 +1590,11 @@ const LiveAnalysisView: React.FC = () => {
                   {/* Warning Flags */}
                   {audioState.warningFlags.length > 0 && (
                     <div>
-                      <h5 className="text-sm font-medium text-orange-700 dark:text-[#f4a261] mb-2">Cần chú ý:</h5>
-                      <ul className="text-orange-900 dark:text-orange-100 space-y-1">
+                      <h5 className="text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-2">Cần chú ý:</h5>
+                      <ul className="text-yellow-900 dark:text-yellow-100 space-y-1">
                         {audioState.warningFlags.map((flag, index) => (
                           <li key={index} className="flex items-start space-x-2">
-                            <span className="text-[#f4a261] mt-0.5">•</span>
+                            <span className="text-yellow-400 mt-0.5">•</span>
                             <span>{flag}</span>
                           </li>
                         ))}
@@ -1605,16 +1605,16 @@ const LiveAnalysisView: React.FC = () => {
               </div>
               
               {/* Quick Actions */}
-              <div className="bg-[#52b788]/10 dark:bg-[#52b788]/20 border border-[#52b788]/40 dark:border-[#52b788]/50 rounded-xl p-4">
+              <div className="bg-green-600/10 dark:bg-green-600/20 border border-green-600/40 dark:border-green-600/50 rounded-xl p-4">
                 <h4 className="text-lg font-medium text-green-600 dark:text-green-400 mb-3">Thao tác nhanh</h4>
                 <div className="space-y-2">
-                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-green-600/40 text-sm text-green-900 dark:text-green-100 hover:bg-green-600/10 dark:hover:bg-green-600/20 transition-colors">
                     Chuyển tiếp khách hàng lên bộ phận cao hơn
                   </button>
-                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-green-600/40 text-sm text-green-900 dark:text-green-100 hover:bg-green-600/10 dark:hover:bg-green-600/20 transition-colors">
                     Đề xuất giảm giá/ bồi thường
                   </button>
-                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-[#52b788]/40 text-sm text-green-900 dark:text-green-100 hover:bg-[#52b788]/10 dark:hover:bg-[#52b788]/20 transition-colors">
+                  <button className="w-full text-left px-3 py-2 bg-white dark:bg-slate-800 rounded-xl border border-green-600/40 text-sm text-green-900 dark:text-green-100 hover:bg-green-600/10 dark:hover:bg-green-600/20 transition-colors">
                     Đặt lịch gọi lại
                   </button>
                 </div>

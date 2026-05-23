@@ -27,8 +27,8 @@ const AmazonCaseStudyView: React.FC<AmazonCaseStudyViewProps> = ({ content }) =>
                             <span className="text-base font-medium text-text-primary">{point.name}</span>
                             <span className="text-sm font-medium text-text-primary">{point.value}%</span>
                         </div>
-                        <div className="w-full bg-slate-100 dark:bg-[#0077b6] rounded-full h-2.5">
-                            <div className="bg-[#0077b6] h-2.5 rounded-full" style={{ width: `${point.value}%` }}></div>
+                        <div className="w-full bg-slate-100 dark:bg-blue-700 rounded-full h-2.5">
+                          <div className="bg-blue-700 h-2.5 rounded-full" style={{ width: `${point.value}%` }}></div>
                         </div>
                     </div>
                 ))}
@@ -41,14 +41,14 @@ const AmazonCaseStudyView: React.FC<AmazonCaseStudyViewProps> = ({ content }) =>
             <div className="space-y-4">
                 <div>
                     <h4 className="font-bold text-text-primary">Trigger:</h4>
-                    <p className="text-text-secondary p-3 bg-slate-100 dark:bg-[#0077b6]/50 rounded-md mt-1">{content.workflow.trigger}</p>
+                    <p className="text-text-secondary p-3 bg-slate-100 dark:bg-blue-700/50 rounded-md mt-1">{content.workflow.trigger}</p>
                 </div>
                 <div>
                     <h4 className="font-bold text-text-primary">Automated Actions:</h4>
-                    <ol className="relative border-l border-gray-200 dark:border-[#00b4d8] mt-2 ml-2">
+                    <ol className="relative border-l border-gray-200 dark:border-sky-400 mt-2 ml-2">
                         {content.workflow.steps.map((step, index) => (
                             <li key={index} className="mb-4 ml-4">
-                                <div className="absolute w-3 h-3 bg-[#00b4d8] rounded-full mt-1.5 -left-1.5 border border-white dark:border-[#0A2540]"></div>
+                          <div className="absolute w-3 h-3 bg-sky-400 rounded-full mt-1.5 -left-1.5 border border-white dark:border-slate-900"></div>
                                 <p className="text-sm font-normal text-text-secondary">{step}</p>
                             </li>
                         ))}
@@ -62,8 +62,8 @@ const AmazonCaseStudyView: React.FC<AmazonCaseStudyViewProps> = ({ content }) =>
         <Card title="AI-Generated Solutions" icon={TrendUpIcon}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {content.aiSolutions.map((solution, index) => (
-              <div key={index} className="p-4 bg-slate-100 dark:bg-[#0077b6]/50 rounded-lg border border-gray-200 dark:border-[#00b4d8] hover:border-[#00b4d8] transition-colors">
-                <h3 className="font-semibold text-[#00b4d8]">{solution.title}</h3>
+              <div key={index} className="p-4 bg-slate-100 dark:bg-blue-700/50 rounded-lg border border-gray-200 dark:border-sky-400 hover:border-sky-400 transition-colors">
+                <h3 className="font-semibold text-sky-400">{solution.title}</h3>
                 <p className="text-text-secondary mt-1">{solution.description}</p>
               </div>
             ))}

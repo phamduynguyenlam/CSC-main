@@ -94,7 +94,7 @@ const AssistantPopup: React.FC = () => {
                     return <del key={i}>{part.slice(2, -2)}</del>;
                 }
                 if (part.startsWith('`') && part.endsWith('`')) {
-                    return <code key={i} className="bg-slate-100 dark:bg-[#0077b6] text-[#00b4d8] px-1 py-0.5 rounded text-sm">{part.slice(1, -1)}</code>;
+                    return <code key={i} className="bg-slate-100 dark:bg-blue-700 text-sky-400 px-1 py-0.5 rounded text-sm">{part.slice(1, -1)}</code>;
                 }
                 return part;
             });
@@ -148,7 +148,7 @@ const AssistantPopup: React.FC = () => {
         fixed bottom-20 right-4 md:right-8
         w-[calc(100%-2rem)] max-w-md
         h-[70vh] max-h-[500px]
-        bg-white dark:bg-[#0A2540] border border-gray-200 dark:border-[#00b4d8]/50 rounded-2xl shadow-xl
+        bg-white dark:bg-slate-900 border border-gray-200 dark:border-sky-400/50 rounded-2xl shadow-xl
         flex flex-col
         transition-all duration-300 ease-in-out
         ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}
@@ -158,7 +158,7 @@ const AssistantPopup: React.FC = () => {
         <>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-4 right-4 md:right-8 z-50 w-14 h-14 bg-[#0077b6] rounded-full shadow-md flex items-center justify-center text-white hover:bg-[#00b4d8] transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#0077b6]/50"
+                className="fixed bottom-4 right-4 md:right-8 z-50 w-14 h-14 bg-blue-700 rounded-full shadow-md flex items-center justify-center text-white hover:bg-sky-400 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-700/50"
                 aria-label="Bật/tắt Trợ lý AI"
             >
                 <LightbulbIcon className="w-7 h-7" />
@@ -166,8 +166,8 @@ const AssistantPopup: React.FC = () => {
 
             <div className={popupClasses} style={{ zIndex: 40 }}>
                 {/* Header */}
-                <div className="flex items-center p-4 border-b border-gray-200 dark:border-[#00b4d8]/50 flex-shrink-0">
-                    <LogoIcon className="w-6 h-6 text-[#00b4d8]" />
+                <div className="flex items-center p-4 border-b border-gray-200 dark:border-sky-400/50 flex-shrink-0">
+                    <LogoIcon className="w-6 h-6 text-sky-400" />
                     <h3 className="ml-3 text-lg font-bold text-text-primary">Trợ lý AI</h3>
                     <button onClick={() => setIsOpen(false)} className="ml-auto text-text-secondary hover:text-text-primary text-2xl font-bold">&times;</button>
                 </div>
@@ -176,16 +176,16 @@ const AssistantPopup: React.FC = () => {
                 <div className="flex-1 p-4 overflow-y-auto space-y-4">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                            {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-[#00b4d8]/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-[#00b4d8]"/></div>}
-                            <div className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl ${msg.sender === 'user' ? 'bg-[#0077b6] text-white rounded-br-none' : 'bg-slate-100 dark:bg-[#0077b6] text-text-primary rounded-bl-none'}`}>
+                            {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-sky-400/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-sky-400"/></div>}
+                            <div className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl ${msg.sender === 'user' ? 'bg-blue-700 text-white rounded-br-none' : 'bg-slate-100 dark:bg-blue-700 text-text-primary rounded-bl-none'}`}>
                                 {renderMessageContent(msg.text)}
                             </div>
                         </div>
                     ))}
                     {isLoading && (
                         <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#00b4d8]/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-[#00b4d8]"/></div>
-                            <div className="max-w-xs md:max-w-sm px-4 py-2 rounded-2xl bg-slate-100 dark:bg-[#0077b6] text-text-primary rounded-bl-none">
+                            <div className="w-8 h-8 rounded-full bg-sky-400/20 flex items-center justify-center flex-shrink-0"><LogoIcon className="w-5 h-5 text-sky-400"/></div>
+                            <div className="max-w-xs md:max-w-sm px-4 py-2 rounded-2xl bg-slate-100 dark:bg-blue-700 text-text-primary rounded-bl-none">
                                 <div className="flex items-center space-x-2">
                                     <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse delay-75"></span>
                                     <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse delay-150"></span>
@@ -198,8 +198,8 @@ const AssistantPopup: React.FC = () => {
                 </div>
                 
                 {/* Input Form */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-[#00b4d8]/50 flex-shrink-0">
-                    <div className="flex items-center bg-slate-100 dark:bg-[#0077b6] rounded-lg">
+                <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-sky-400/50 flex-shrink-0">
+                    <div className="flex items-center bg-slate-100 dark:bg-blue-700 rounded-lg">
                         <input
                             type="text"
                             value={input}
@@ -208,7 +208,7 @@ const AssistantPopup: React.FC = () => {
                             className="w-full bg-transparent px-4 py-2 focus:outline-none text-text-primary"
                             disabled={isLoading}
                         />
-                        <button type="submit" className="p-2 text-[#0077b6] disabled:text-text-secondary/50" disabled={isLoading || !input.trim()}>
+                        <button type="submit" className="p-2 text-blue-700 disabled:text-text-secondary/50" disabled={isLoading || !input.trim()}>
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
                         </button>
                     </div>

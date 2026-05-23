@@ -44,11 +44,11 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
   }, []);
 
   return (
-    <header className="flex-shrink-0 bg-white dark:bg-[#0A2540] h-20 flex items-center justify-between px-4 md:px-6 border-b border-gray-200 dark:border-white/10 shadow-sm">
+    <header className="flex-shrink-0 bg-white dark:bg-slate-900 h-20 flex items-center justify-between px-4 md:px-6 border-b border-gray-200 dark:border-white/10 shadow-sm">
       <div className="flex items-center">
         <button 
           onClick={onMenuClick} 
-          className="md:hidden text-gray-600 dark:text-gray-400 mr-4 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#0077b6]"
+          className="md:hidden text-gray-600 dark:text-gray-400 mr-4 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
         {/* Theme Toggle */}
         <button 
           onClick={onThemeToggle}
-          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-[#0077b6] rounded-lg transition-colors"
+          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           title={isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'}
         >
           {isDarkMode ? (
@@ -118,7 +118,7 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-[#0077b6] rounded-lg relative"
+            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative"
             aria-label="Thông báo"
             title="Thông báo"
           >
@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#0A2540] text-gray-800 dark:text-gray-200 rounded-lg shadow-md border border-gray-200 dark:border-[#00b4d8] z-50">
+            <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200 rounded-lg shadow-md border border-gray-200 dark:border-ring z-50">
               <div className="p-4">
                 <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">Thông báo</h4>
                 <div className="text-sm text-gray-600 dark:text-gray-300 mb-3">
@@ -138,13 +138,13 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
                 <div className="flex justify-end space-x-2">
                   <button
                     onClick={() => setShowNotifications(false)}
-                    className="px-3 py-1 rounded-md bg-slate-100 dark:bg-[#0077b6] text-sm"
+                    className="px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm"
                   >
                     Đóng
                   </button>
                   <button
                     onClick={() => { setUnread(false); setShowNotifications(false); }}
-                    className="px-3 py-1 rounded-md bg-[#0077b6] text-white text-sm"
+                    className="px-3 py-1 rounded-md bg-blue-700 text-white text-sm"
                   >
                     Đánh dấu đã đọc
                   </button>
@@ -163,37 +163,37 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onThemeToggle, isDa
             className="flex items-center gap-2 px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none"
             aria-label="Tài khoản"
           >
-            <span className="w-8 h-8 rounded-full bg-slate-200 dark:bg-[#0077b6] flex items-center justify-center text-xs font-semibold text-slate-700 dark:text-slate-100">
+            <span className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs font-semibold text-slate-700 dark:text-slate-100">
               {managerMode ? 'LA' : 'NN'}
             </span>
             <ChevronDown className="h-4 w-4" />
           </button>
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#0A2540] text-gray-800 dark:text-gray-200 rounded-2xl shadow-xl border border-gray-200 dark:border-[#00b4d8] z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200 rounded-2xl shadow-xl border border-gray-200 dark:border-ring z-50 overflow-hidden">
               <button
-                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#0077b6] transition"
+                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 onClick={() => { onProfileClick(); setShowProfileMenu(false); }}
               >
                 <User className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-100" />
                 Hồ sơ
               </button>
               <button
-                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#0077b6] transition"
+                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 onClick={() => { onSettingsClick(); setShowProfileMenu(false); }}
               >
                 <Settings className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-100" />
                 Cài đặt
               </button>
               <button
-                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#0077b6] transition"
+                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 onClick={() => { onToggleManagerMode(); setShowProfileMenu(false); }}
               >
                 <BarChart3 className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-100" />
                 Đổi sang chế độ {managerMode ? 'Analyst' : 'Manager'}
               </button>
-              <div className="border-t border-gray-200 dark:border-[#00b4d8]" />
+              <div className="border-t border-gray-200 dark:border-ring" />
               <button
-                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-[#0077b6] transition"
+                className="group flex items-center w-full px-4 py-3 text-left gap-3 text-sm text-red-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 onClick={() => { onLogout(); setShowProfileMenu(false); }}
               >
                 <LogOut className="h-4 w-4 text-red-600" />
