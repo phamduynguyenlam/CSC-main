@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
 
   const sidebarClasses = `
     fixed md:relative inset-y-0 left-0 z-30
-    w-64 bg-white dark:bg-[#0A2540] border-r border-gray-200 dark:border-white/10
+    w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-white/10
     transform transition-transform duration-300 ease-in-out
     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
     md:translate-x-0
@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
   return (
     <>
       <div className={sidebarClasses}>
-        <div className="flex-shrink-0 px-3 py-4">
+        <div className="flex-shrink-0 px-2 py-4 pt-10">
           <div className="flex items-center justify-center">
             <BrandLogo className="h-auto w-24 text-black dark:text-white" />
           </div>
@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ view, setView, isOpen, setIsOpen, isD
               }}
               title="Open profile"
               aria-label="Open profile"
-              className="w-8 h-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-offset-1 hover:ring-gray-200 dark:hover:ring-[#00b4d8] focus:outline-none"
+              className="w-8 h-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center hover:ring-2 hover:ring-offset-1 hover:ring-gray-200 dark:hover:ring-ring focus:outline-none"
             >
               <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">NN</span>
             </button>

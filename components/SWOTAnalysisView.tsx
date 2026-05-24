@@ -238,10 +238,10 @@ const SWOTAnalysisView: React.FC = () => {
   ];
 
   const productCategories = [
-    { name: 'Điện tử', value: 35, color: '#0077b6' },
-    { name: 'Thời trang', value: 28, color: '#52b788' },
-    { name: 'Nhà & Vườn', value: 22, color: '#f4a261' },
-    { name: 'Sách', value: 15, color: '#e63946' }
+    { name: 'Điện tử', value: 35, color: '#262626' },
+    { name: 'Thời trang', value: 28, color: '#737373' },
+    { name: 'Nhà & Vườn', value: 22, color: '#A3A3A3' },
+    { name: 'Sách', value: 15, color: '#171717' }
   ];
 
   const swotData = {
@@ -282,29 +282,29 @@ const SWOTAnalysisView: React.FC = () => {
     switch (sentiment) {
       case 'Tích cực': 
       case 'Cao':
-        return 'text-green-500 bg-[#52b788]/10 dark:bg-[#52b788]/30';
+        return 'text-green-500 bg-green-600/10 dark:bg-green-600/30';
       case 'Tiêu cực': 
       case 'Thấp': 
-        return 'text-red-500 bg-[#e63946]/10 dark:bg-[#e63946]/30';
-      default: return 'text-orange-500 bg-[#f4a261]/10 dark:bg-[#f4a261]/30';
+        return 'text-red-500 bg-red-600/10 dark:bg-red-600/30';
+      default: return 'text-yellow-500 bg-yellow-400/10 dark:bg-yellow-400/30';
     }
   };
 
-  // Return a blue shade hex based on percentage (higher % => darker blue)
+  // Return a grayscale shade based on percentage (higher % => darker)
   const getBlueShade = (percent: number) => {
-    if (percent >= 30) return '#1e3a8a'; // blue-900
-    if (percent >= 20) return '#1d4ed8'; // blue-700
-    if (percent >= 15) return '#3b82f6'; // blue-500
-    if (percent >= 10) return '#60a5fa'; // blue-400
-    return '#93c5fd'; // blue-300
+    if (percent >= 30) return '#262626';
+    if (percent >= 20) return '#737373';
+    if (percent >= 15) return '#A3A3A3';
+    if (percent >= 10) return '#D4D4D4';
+    return '#E5E5E5';
   };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 space-y-6">
       <div className="max-w-7xl mx-auto">
         {/* Moving Ticker Alerts */}
-        <div className="mb-6 bg-gradient-to-r from-[#aca8ff] to-[#668aff] text-white p-3 rounded-lg shadow-md flex items-center">
-          <span className="bg-white text-blue-800 px-2 py-1 rounded text-sm font-semibold mr-4">LIVE</span>
+        <div className="mb-6 bg-gradient-to-r from-slate-200 to-slate-400 text-foreground p-3 rounded-lg shadow-md flex items-center">
+          <span className="bg-secondary text-foreground px-2 py-1 rounded text-sm font-semibold mr-4">LIVE</span>
           <div className="overflow-hidden flex-1">
             <div className="marquee whitespace-nowrap">
               <span className="text-lg font-medium text-white">{currentAlert}</span>
@@ -412,15 +412,15 @@ const SWOTAnalysisView: React.FC = () => {
                 <YAxis stroke="gray" tick={{ fontSize: 13 }} />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#0A2540', 
+                    backgroundColor: '#262626', 
                     border: 'none',
                     borderRadius: '0.5rem',
-                    color: 'white'
+                    color: '#FAFAFA'
                   }} 
                 />
-                <Area type="monotone" dataKey="logins" stackId="1" stroke="#668aff" fill="#668aff" fillOpacity={0.3} />
-                <Area type="monotone" dataKey="calls" stackId="2" stroke="#668aff" fill="#668aff" fillOpacity={0.3} />
-                <Area type="monotone" dataKey="sales" stackId="3" stroke="#668aff" fill="#668aff" fillOpacity={0.9} />
+                <Area type="monotone" dataKey="logins" stackId="1" stroke="#262626" fill="#262626" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="calls" stackId="2" stroke="#262626" fill="#262626" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="sales" stackId="3" stroke="#262626" fill="#262626" fillOpacity={0.9} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -534,7 +534,7 @@ const SWOTAnalysisView: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Điểm kích hoạt chiến lược AFI</h3>
             <div className="space-y-4">
               {afiTriggers.map((afi) => (
-                <div key={`afi-${afi.id}`} className="p-4 border-l-4 border-orange-400 bg-[#f4a261]/10 dark:bg-[#f4a261]/30 rounded-r-lg">
+                <div key={`afi-${afi.id}`} className="p-4 border-l-4 border-yellow-400 bg-yellow-400/10 dark:bg-yellow-400/30 rounded-r-lg">
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="font-semibold text-gray-900 dark:text-white">{afi.area}</h4>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getKeywordSentimentClass(afi.priority)}}`}>
@@ -548,7 +548,7 @@ const SWOTAnalysisView: React.FC = () => {
                     </div>
                     <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 mt-1">
                       <div 
-                        className="bg-orange-400 h-2 rounded-full" 
+                        className="bg-yellow-400 h-2 rounded-full" 
                         style={{ width: `${(afi.currentScore / afi.target) * 100}%` }}
                       ></div>
                     </div>
@@ -564,7 +564,7 @@ const SWOTAnalysisView: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Tiến độ mục tiêu bền vững</h3>
             <div className="space-y-4">
               {positiveGoals.map((goal) => (
-                <div key={`positive-goal-${goal.goal.toLowerCase().replace(/\s+/g, '-')}`} className="p-4 border-l-4 border-green-500 bg-[#52b788]/10 dark:bg-[#52b788]/30 rounded-r-lg">
+                <div key={`positive-goal-${goal.goal.toLowerCase().replace(/\s+/g, '-')}`} className="p-4 border-l-4 border-green-500 bg-green-600/10 dark:bg-green-600/30 rounded-r-lg">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{goal.goal}</h4>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -593,7 +593,7 @@ const SWOTAnalysisView: React.FC = () => {
 
           {/* Call Center KPI Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Cuộc gọi hôm nay</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">2,847</p>
@@ -601,7 +601,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Thời gian xử lý TB</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">4:32</p>
@@ -609,7 +609,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Xử lý ngay lần đầu</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">89.3%</p>
@@ -617,7 +617,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Mức độ hài lòng</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">4.6/5</p>
@@ -648,14 +648,14 @@ const SWOTAnalysisView: React.FC = () => {
                   <YAxis />
                   <Tooltip 
                     contentStyle={{ 
-                    backgroundColor: '#0A2540', 
+                    backgroundColor: '#262626', 
                     border: 'none', 
                     borderRadius: '0.5rem',
-                    color: 'white'
+                    color: '#FAFAFA'
                   }} />
-                  <Line type="monotone" dataKey="calls" stroke="#3b82f6" strokeWidth={3} name="Tổng cuộc gọi" />
-                  <Line type="monotone" dataKey="resolved" stroke="#22c55e" strokeWidth={2} name="Đã giải quyết" />
-                  <Line type="monotone" dataKey="abandoned" stroke="#ef4444" strokeWidth={2} name="Đã từ bỏ" />
+                  <Line type="monotone" dataKey="calls" stroke="#262626" strokeWidth={3} name="Tổng cuộc gọi" />
+                  <Line type="monotone" dataKey="resolved" stroke="#737373" strokeWidth={2} name="Đã giải quyết" />
+                  <Line type="monotone" dataKey="abandoned" stroke="#A3A3A3" strokeWidth={2} name="Đã từ bỏ" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -829,7 +829,7 @@ const SWOTAnalysisView: React.FC = () => {
 
           {/* Amazon Overview Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Tổng sản phẩm</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">{amazonDataset.overview.totalProducts.toLocaleString()}</p>
@@ -837,7 +837,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Đánh giá trung bình</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">{amazonDataset.overview.avgRating} ⭐</p>
@@ -845,7 +845,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Giá trung bình</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">${amazonDataset.overview.priceRange.avg}</p>
@@ -853,7 +853,7 @@ const SWOTAnalysisView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#aca8ff]/30 to-[#668aff]/30 text-blue-900 dark:text-white p-6 rounded-lg shadow-md">
+            <div className="bg-gradient-to-br from-slate-200/30 to-slate-400/30 text-foreground dark:text-white p-6 rounded-lg shadow-md">
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Vị trí thị trường</h3>
                 <p className="text-3xl font-bold dark:text-sky-400">{amazonDataset.competitorInsights.marketShare}%</p>
@@ -909,40 +909,40 @@ const SWOTAnalysisView: React.FC = () => {
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Phân tích cảm xúc khách hàng</h3>
               <div className="space-y-4">
                 {/* Tích cực */}
-                <div className="p-3 rounded-lg bg-[#52b788]/10 dark:bg-[#52b788]/30 border border-[#52b788]/30">
+                <div className="p-3 rounded-lg bg-green-600/10 dark:bg-green-600/30 border border-green-600/30">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-green-500 font-semibold">Tích cực</span>
                     <span className="text-2xl font-bold text-green-500">{amazonDataset.sentimentAnalysis.positive}%</span>
                   </div>
-                  <div className="w-full bg-[#52b788]/20 dark:bg-[#52b788]/20 rounded-full h-3">
-                    <div className="bg-[#52b788] h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.positive}%` }}></div>
+                  <div className="w-full bg-green-600/20 dark:bg-green-600/20 rounded-full h-3">
+                    <div className="bg-green-600 h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.positive}%` }}></div>
                   </div>
                 </div>
 
                 {/* Trung lập */}
-                <div className="p-3 rounded-lg bg-[#f4a261]/10 dark:bg-[#f4a261]/30 border border-[#f4a261]/30">
+                <div className="p-3 rounded-lg bg-yellow-400/10 dark:bg-yellow-400/30 border border-yellow-400/30">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-orange-500 font-semibold">Trung lập</span>
-                    <span className="text-2xl font-bold text-orange-500">{amazonDataset.sentimentAnalysis.neutral}%</span>
+                    <span className="text-yellow-500 font-semibold">Trung lập</span>
+                    <span className="text-2xl font-bold text-yellow-500">{amazonDataset.sentimentAnalysis.neutral}%</span>
                   </div>
-                  <div className="w-full bg-[#f4a261]/20 dark:bg-[#f4a261]/20 rounded-full h-3">
-                    <div className="bg-[#f4a261] h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.neutral}%` }}></div>
+                  <div className="w-full bg-yellow-400/20 dark:bg-yellow-400/20 rounded-full h-3">
+                    <div className="bg-yellow-400 h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.neutral}%` }}></div>
                   </div>
                 </div>
 
                 {/* Tiêu cực */}
-                <div className="p-3 rounded-lg bg-[#e63946]/10 dark:bg-[#e63946]/30 border border-[#e63946]/30">
+                <div className="p-3 rounded-lg bg-red-600/10 dark:bg-red-600/30 border border-red-600/30">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-red-500 font-semibold">Tiêu cực</span>
                     <span className="text-2xl font-bold text-red-500">{amazonDataset.sentimentAnalysis.negative}%</span>
                   </div>
-                  <div className="w-full bg-[#e63946]/20 dark:bg-[#e63946]/20 rounded-full h-3">
-                    <div className="bg-[#e63946] h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.negative}%` }}></div>
+                  <div className="w-full bg-red-600/20 dark:bg-red-600/20 rounded-full h-3">
+                    <div className="bg-red-600 h-3 rounded-full" style={{ width: `${amazonDataset.sentimentAnalysis.negative}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="mt-4 p-4 bg-white dark:bg-[#0A2540]/80 rounded-lg">
-                  <p className="text-sm text-[#0A2540] dark:text-sky-400">
+                <div className="mt-4 p-4 bg-white dark:bg-slate-900/80 rounded-lg">
+                  <p className="text-sm text-slate-900 dark:text-slate-100">
                     <strong>Xu hướng hàng tháng:</strong> +{amazonDataset.sentimentAnalysis.monthlyTrend}% cải thiện cảm xúc tích cực
                   </p>
                 </div>
@@ -958,8 +958,8 @@ const SWOTAnalysisView: React.FC = () => {
                   <XAxis dataKey="competitor" angle={-45} textAnchor="end" height={60} />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="marketShare" fill="#3b82f6" name="Thị phần %" />
-                  <Bar dataKey="rating" fill="#1e3a8a" name="Đánh giá" />
+                  <Bar dataKey="marketShare" fill="#262626" name="Thị phần %" />
+                  <Bar dataKey="rating" fill="#737373" name="Đánh giá" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -971,7 +971,7 @@ const SWOTAnalysisView: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto">
                 <thead>
-                  <tr className="bg-blue-50 dark:bg-blue-900/20 border-b-2 border-[#0077b6]/30">
+                  <tr className="bg-blue-50 dark:bg-blue-900/20 border-b-2 border-blue-700/30">
                     <th className="px-4 py-3 text-left text-blue-600 dark:text-sky-400 font-semibold text-sm uppercase tracking-wide">Danh mục</th>
                     <th className="px-4 py-3 text-left text-blue-600 dark:text-sky-400 font-semibold text-sm uppercase tracking-wide">Sản phẩm</th>
                     <th className="px-4 py-3 text-left text-blue-600 dark:text-sky-400 font-semibold text-sm uppercase tracking-wide">Đánh giá TB</th>
@@ -981,11 +981,11 @@ const SWOTAnalysisView: React.FC = () => {
                 </thead>
                 <tbody>
                   {amazonDataset.topCategories.map((category, index) => {
-                    const ratingColor = category.avgRating >= 4.0 ? 'text-green-600 dark:text-green-400' : category.avgRating >= 3.0 ? 'text-orange-500' : 'text-red-500';
+                    const ratingColor = category.avgRating >= 4.0 ? 'text-green-600 dark:text-green-400' : category.avgRating >= 3.0 ? 'text-yellow-500' : 'text-red-500';
                     return (
                       <tr
                         key={`amazon-category-${category.id}`}
-                        className={`border-b border-gray-100 dark:border-gray-700 transition-colors duration-150 hover:bg-[#0077b6]/5 dark:hover:bg-[#0077b6]/10 ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/60 dark:bg-slate-700/30'}`}
+                        className={`border-b border-gray-100 dark:border-gray-700 transition-colors duration-150 hover:bg-blue-700/5 dark:hover:bg-blue-700/10 ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/60 dark:bg-slate-700/30'}`}
                       >
                         <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">{category.name}</td>
                         <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{category.products.toLocaleString()}</td>
@@ -995,7 +995,7 @@ const SWOTAnalysisView: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="inline-block px-2 py-0.5 rounded-md bg-[#52b788]/10 dark:bg-[#52b788]/30 text-green-700 dark:text-green-400 font-semibold text-sm">
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-green-600/10 dark:bg-green-600/30 text-green-700 dark:text-green-400 font-semibold text-sm">
                             ${category.avgPrice}
                           </span>
                         </td>
@@ -1016,7 +1016,7 @@ const SWOTAnalysisView: React.FC = () => {
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Strengths */}
-          <div className="bg-[#52b788]/10 dark:bg-[#52b788]/30 p-6 rounded-lg border border-[#52b788]/40 dark:border-[#52b788]/50">
+          <div className="bg-green-600/10 dark:bg-green-600/30 p-6 rounded-lg border border-green-600/40 dark:border-green-600/50">
             <h2 className="text-xl font-bold text-green-600 dark:text-green-400 mb-4">Điểm mạnh (Strengths - S)</h2>
             <ul className="space-y-2">
               {swotData.strengths.map((item, index) => (
@@ -1029,7 +1029,7 @@ const SWOTAnalysisView: React.FC = () => {
           </div>
 
           {/* Weaknesses */}
-          <div className="bg-[#e63946]/10 dark:bg-[#e63946]/30 p-6 rounded-lg border border-[#e63946]/40 dark:border-[#e63946]/50">
+          <div className="bg-red-600/10 dark:bg-red-600/30 p-6 rounded-lg border border-red-600/40 dark:border-red-600/50">
             <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Điểm yếu (Weaknesses - W)</h2>
             <ul className="space-y-2">
               {swotData.weaknesses.map((item, index) => (
@@ -1042,7 +1042,7 @@ const SWOTAnalysisView: React.FC = () => {
           </div>
 
           {/* Opportunities */}
-          <div className="bg-blue-50 dark:bg-sky-900/30 p-6 rounded-lg border border-[#0077b6]/40 dark:border-[#0077b6]/50">
+          <div className="bg-blue-50 dark:bg-sky-900/30 p-6 rounded-lg border border-blue-700/40 dark:border-blue-700/50">
             <h2 className="text-xl font-bold text-blue-600 dark:text-sky-400 mb-4">Cơ hội (Opportunities - O)</h2>
             <ul className="space-y-2">
               {swotData.opportunities.map((item, index) => (
@@ -1055,11 +1055,11 @@ const SWOTAnalysisView: React.FC = () => {
           </div>
 
           {/* Threats */}
-          <div className="bg-[#f4a261]/10 dark:bg-[#f4a261]/30 p-6 rounded-lg border border-[#f4a261]/40 dark:border-[#f4a261]/50">
-            <h2 className="text-xl font-bold text-orange-500 dark:text-orange-400 mb-4">Thách thức (Threats - T)</h2>
+          <div className="bg-yellow-400/10 dark:bg-yellow-400/30 p-6 rounded-lg border border-yellow-400/40 dark:border-yellow-400/50">
+            <h2 className="text-xl font-bold text-yellow-500 dark:text-yellow-400 mb-4">Thách thức (Threats - T)</h2>
             <ul className="space-y-2">
               {swotData.threats.map((item, index) => (
-                <li key={`threat-${index}-${item.slice(0, 20).replace(/\s+/g, '-')}`} className="text-orange-900 dark:text-orange-100 flex items-start">
+                <li key={`threat-${index}-${item.slice(0, 20).replace(/\s+/g, '-')}`} className="text-yellow-900 dark:text-yellow-100 flex items-start">
                   <span className="mr-2 mt-0.5">!</span>
                   {item}
                 </li>

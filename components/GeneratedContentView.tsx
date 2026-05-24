@@ -14,7 +14,7 @@ const GeneratedContentView: React.FC<GeneratedContentViewProps> = ({ title, cont
         if (content) {
             return content.split('\n').map((paragraph, index) => {
                 if (paragraph.trim().startsWith('###')) {
-                    return <h3 key={index} className="text-xl font-semibold mt-6 mb-2 text-[#00b4d8]">{paragraph.replace('###', '').trim()}</h3>
+                    return <h3 key={index} className="text-xl font-semibold mt-6 mb-2 text-sky-400">{paragraph.replace('###', '').trim()}</h3>
                 }
                 if (paragraph.trim().startsWith('**')) {
                     const cleanText = paragraph.replace(/\*\*/g, '');
@@ -34,8 +34,8 @@ const GeneratedContentView: React.FC<GeneratedContentViewProps> = ({ title, cont
             return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {featureList.map((feature, index) => (
-                        <div key={index} className="p-6 bg-slate-100 dark:bg-[#0077b6]/50 rounded-lg border border-gray-200 dark:border-[#00b4d8] hover:border-[#00b4d8] transition-colors">
-                           <h3 className="text-xl font-semibold text-[#00b4d8] mb-2">{feature.title}</h3>
+                                <div key={index} className="p-6 bg-slate-100 dark:bg-blue-700/50 rounded-lg border border-gray-200 dark:border-sky-400 hover:border-sky-400 transition-colors">
+                                    <h3 className="text-xl font-semibold text-sky-400 mb-2">{feature.title}</h3>
                            <p className="text-text-secondary leading-relaxed">{feature.description}</p>
                         </div>
                     ))}

@@ -26,7 +26,7 @@ const AnalyticsView: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-[#0077b6] text-[#0077b6] dark:text-[#90e0ef]'
+                  ? 'border-blue-700 text-blue-700 dark:text-sky-200'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               }`}
             >
@@ -37,27 +37,27 @@ const AnalyticsView: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="bg-white dark:bg-[#0A2540] rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-6">
         {activeTab === 'surveys' && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Phân bố kết quả khảo sát
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-[#52b788]/20 p-4 rounded-lg">
-                <h4 className="font-medium text-[#52b788] dark:text-[#52b788]">Tích cực</h4>
-                <p className="text-2xl font-bold text-[#52b788] dark:text-[#52b788]">72%</p>
-                <p className="text-sm text-[#52b788] dark:text-[#52b788]">+5% so với tháng trước</p>
+              <div className="bg-white dark:bg-green-600/20 p-4 rounded-lg">
+                <h4 className="font-medium text-green-600 dark:text-green-600">Tích cực</h4>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-600">72%</p>
+                <p className="text-sm text-green-600 dark:text-green-600">+5% so với tháng trước</p>
               </div>
-              <div className="bg-white dark:bg-[#f4a261]/20 p-4 rounded-lg">
-                <h4 className="font-medium text-[#f4a261] dark:text-[#f4a261]">Trung tính</h4>
-                <p className="text-2xl font-bold text-[#f4a261] dark:text-[#f4a261]">18%</p>
-                <p className="text-sm text-[#f4a261] dark:text-[#f4a261]">-2% so với tháng trước</p>
+              <div className="bg-white dark:bg-yellow-400/20 p-4 rounded-lg">
+                <h4 className="font-medium text-yellow-500 dark:text-yellow-400">Trung tính</h4>
+                <p className="text-2xl font-bold text-yellow-500 dark:text-yellow-400">18%</p>
+                <p className="text-sm text-yellow-500 dark:text-yellow-400">-2% so với tháng trước</p>
               </div>
-              <div className="bg-white dark:bg-[#e63946]/20 p-4 rounded-lg">
-                <h4 className="font-medium text-[#e63946] dark:text-[#e63946]">Tiêu cực</h4>
-                <p className="text-2xl font-bold text-[#e63946] dark:text-[#e63946]">10%</p>
-                <p className="text-sm text-[#e63946] dark:text-[#e63946]">-3% so với tháng trước</p>
+              <div className="bg-white dark:bg-red-600/20 p-4 rounded-lg">
+                <h4 className="font-medium text-red-600 dark:text-red-600">Tiêu cực</h4>
+                <p className="text-2xl font-bold text-red-600 dark:text-red-600">10%</p>
+                <p className="text-sm text-red-600 dark:text-red-600">-3% so với tháng trước</p>
               </div>
             </div>
           </div>
@@ -75,10 +75,10 @@ const AnalyticsView: React.FC = () => {
                 { word: 'helpful', sentiment: 'Tích cực', count: 156 },
                 { word: 'confusing', sentiment: 'Tiêu cực', count: 67 }
               ].map((keyword, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-white dark:bg-[#0077b6] rounded">
+                <div key={index} className="flex items-center justify-between p-3 bg-white dark:bg-blue-700 rounded">
                   <div className="flex items-center space-x-3">
                     <span className={`w-3 h-3 rounded-full ${
-                      keyword.sentiment === 'Tích cực' ? 'bg-[#52b788]' : 'bg-[#e63946]'
+                      keyword.sentiment === 'Tích cực' ? 'bg-green-600' : 'bg-red-600'
                     }`}></span>
                     <span className="font-medium text-gray-900 dark:text-white">{keyword.word}</span>
                   </div>

@@ -47,7 +47,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Bạn đã đăng xuất</h1>
         <button
           onClick={onLogin}
-          className="px-6 py-3 bg-[#0077b6] text-white rounded-lg hover:bg-[#00b4d8]"
+          className="px-6 py-3 bg-blue-700 text-white rounded-lg hover:bg-sky-400"
         >
           Đăng nhập lại
         </button>
@@ -63,7 +63,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({
         <div className="space-x-4">
           <button
             onClick={() => { onSetManagerMode(false); onCancelSwitchAccount(); }}
-            className="px-6 py-3 bg-[#0077b6] text-white rounded-lg hover:bg-[#00b4d8]"
+            className="px-6 py-3 bg-blue-700 text-white rounded-lg hover:bg-sky-400"
           >
             Analyst (Nguyễn Văn Nam)
           </button>

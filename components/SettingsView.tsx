@@ -108,7 +108,7 @@ const SettingsView: React.FC = () => {
                 value={settings.thresholds.sentimentAlert}
                 onChange={(e) => handleThresholdChange('sentimentAlert', parseFloat(e.target.value))}
                 className="w-full"
-                style={{ accentColor: 'blue-600' }}
+                style={{ accentColor: '#262626' }}
               />
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>0</span>
@@ -128,7 +128,7 @@ const SettingsView: React.FC = () => {
                 value={settings.thresholds.churnRisk}
                 onChange={(e) => handleThresholdChange('churnRisk', parseInt(e.target.value))}
                 className="w-full"
-                style={{ accentColor: 'blue-600' }}
+                style={{ accentColor: '#262626' }}
               />
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>0%</span>
