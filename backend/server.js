@@ -93,7 +93,7 @@ app.get('*', (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`🚀 SentiMind Backend Server running on port ${PORT}`);
-  console.log(`📊 Dashboard available at: http://localhost:${PORT}`);
-  console.log(`🔗 API endpoints available at: http://localhost:${PORT}/api`);
+  console.log(`CallPilot backend running on port ${PORT}`);
+  console.log(`Dashboard available at: http://localhost:${PORT}`);
+  console.log(`API endpoints available at: http://localhost:${PORT}/api`);
 });
