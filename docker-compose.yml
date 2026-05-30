@@ -1,0 +1,55 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: csc_mysql
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-change-me}"
+      MYSQL_DATABASE: "${DB_NAME:-customer_care_db}"
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend/database/customer_care_schema.sql:/docker-entrypoint-initdb.d/customer_care_schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  chroma:
+    image: chromadb/chroma
+    container_name: csc_chroma
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/data
+
+  chroma-init:
+    image: node:20-bookworm-slim
+    container_name: csc_chroma_init
+    restart: "no"
+    working_dir: /workspace/backend
+    env_file:
+      - ./backend/.env
+    environment:
+      CHROMA_URL: http://chroma:8000
+    volumes:
+      - ./:/workspace
+      - chroma_seed_node_modules:/workspace/backend/node_modules
+    command: sh -lc "node -e \"const wait = async () => { for (let attempt = 0; attempt < 60; attempt += 1) { try { const response = await fetch('http://chroma:8000/api/v2/heartbeat'); if (response.ok) return; } catch {} await new Promise((resolve) => setTimeout(resolve, 2000)); } throw new Error('Chroma did not become ready in time'); }; wait().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });\" && npm ci --omit=dev && npm run seed:chroma"
+
+  adminer:
+    image: adminer
+    container_name: csc_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
+  chroma_data:
+  chroma_seed_node_modules:

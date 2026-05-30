@@ -1,32 +1,23 @@
 import dotenv from 'dotenv';
-import OpenAI from 'openai';
+import { pipeline } from '@xenova/transformers';
 import { ChromaClient } from 'chromadb';
 
 dotenv.config();
 
 const CHROMA_URL = process.env.CHROMA_URL || 'http://localhost:8000';
 const CHROMA_COLLECTION = process.env.CHROMA_COLLECTION || 'sentimind_call_memory';
-const EMBEDDING_MODEL = process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small';
+const EMBEDDING_MODEL = 'Xenova/all-MiniLM-L6-v2';
 
 let chromaClient;
 let collectionPromise;
-let openaiClient;
+let embedderPromise;
 
-function getOpenAIClient() {
-  if (openaiClient !== undefined) {
-    return openaiClient;
+async function getEmbedder() {
+  if (!embedderPromise) {
+    embedderPromise = pipeline('feature-extraction', EMBEDDING_MODEL);
   }
 
-  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
-    openaiClient = null;
-    return openaiClient;
-  }
-
-  openaiClient = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
-  return openaiClient;
+  return embedderPromise;
 }
 
 function getChromaClient() {
@@ -78,17 +69,32 @@ function chunkText(text, chunkSize = 1200, overlap = 200) {
 }
 
 async function embedTexts(texts) {
-  const openai = getOpenAIClient();
-  if (!openai) {
+  if (!texts?.length) {
+    return [];
+  }
+
+  const embedder = await getEmbedder();
+  if (!embedder) {
     return null;
   }
 
-  const response = await openai.embeddings.create({
-    model: EMBEDDING_MODEL,
-    input: texts,
-  });
+  const embeddings = [];
 
-  return response.data.map((item) => item.embedding);
+  for (const text of texts) {
+    const output = await embedder(text, {
+      pooling: 'mean',
+      normalize: true,
+    });
+
+    const vector = Array.from(output?.data || []);
+    if (!vector.length) {
+      return null;
+    }
+
+    embeddings.push(vector);
+  }
+
+  return embeddings;
 }
 
 async function embedText(text) {
@@ -97,7 +103,7 @@ async function embedText(text) {
 }
 
 export function isRagConfigured() {
-  return Boolean(getOpenAIClient());
+  return Boolean(CHROMA_URL && CHROMA_COLLECTION);
 }
 
 export async function upsertCallMemory({
@@ -109,7 +115,7 @@ export async function upsertCallMemory({
   source = 'customer_assist',
 }) {
   if (!isRagConfigured()) {
-    return { success: false, reason: 'missing_openai_key' };
+    return { success: false, reason: 'missing_chroma_configuration' };
   }
 
   try {
@@ -188,16 +194,37 @@ export async function findRelevantCallMemory({ query, customerId, limit = 3 }) {
       queryEmbeddings: [embedding],
       nResults: limit,
       where,
+      // Note: the HTTP API does not accept 'ids' in the include list (it returns 422).
+      include: ['documents', 'metadatas', 'distances', 'embeddings'],
     });
 
     const documents = result.documents?.[0] || [];
     const metadatas = result.metadatas?.[0] || [];
     const distances = result.distances?.[0] || [];
+    const embeddings = result.embeddings?.[0] || [];
+    const ids = result.ids?.[0] || [];
+
+    // Log retrieved documents and their vectors (truncate vectors for readability)
+    try {
+      const logged = documents.map((doc, idx) => ({
+        id: ids[idx] || null,
+        document: doc,
+        metadata: metadatas[idx] || {},
+        distance: distances[idx] ?? null,
+        embeddingPreview: Array.isArray(embeddings[idx]) ? embeddings[idx].slice(0, 8) : null,
+      }));
+
+      console.info('RAG query:', { query: normalizeWhitespace(query), results: logged });
+    } catch (logErr) {
+      console.warn('Failed to log RAG results:', logErr.message || logErr);
+    }
 
     return documents.map((document, index) => ({
+      id: ids[index] || null,
       document,
       metadata: metadatas[index] || {},
       distance: distances[index] ?? null,
+      embedding: embeddings[index] || null,
     }));
   } catch (error) {
     console.warn('RAG query failed:', error.message || error);

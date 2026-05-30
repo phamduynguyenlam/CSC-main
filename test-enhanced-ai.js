@@ -21,7 +21,6 @@ const testQueries = [
 ];
 
 async function testEnhancedChatbot() {
-    console.log("🧪 Testing Enhanced SenseAI Chatbot with Business Context\n");
 
     for (const query of testQueries) {
         console.log(`📊 Testing: ${query.name}`);
