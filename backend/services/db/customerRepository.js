@@ -128,6 +128,37 @@ async function getCallLogsByCustomerId(customerId) {
   return mapCallLogs(rows);
 }
 
+export async function createCustomerCallLog({
+  customerId,
+  agentName,
+  callType,
+  callSummary,
+  resolutionStatus,
+  nextFollowUpAt = null,
+}) {
+  const result = await query(
+    `INSERT INTO customer_call_logs (
+       customer_id,
+       call_time,
+       agent_name,
+       call_type,
+       call_summary,
+       resolution_status,
+       next_follow_up_at
+     ) VALUES (?, NOW(), ?, ?, ?, ?, ?)`,
+    [
+      customerId,
+      agentName,
+      callType,
+      callSummary,
+      resolutionStatus,
+      nextFollowUpAt,
+    ]
+  );
+
+  return Number(result.insertId);
+}
+
 export async function getCustomerContextByCustomerId(customerId) {
   const customer = await getCustomerById(customerId);
   if (!customer) {
@@ -181,6 +212,7 @@ export async function getCustomerContextByCallLogId(callLogId) {
 }
 
 export default {
+  createCustomerCallLog,
   getCustomerContextByCallLogId,
   getCustomerContextByCustomerId,
   getCustomerContextByPhoneNumber,

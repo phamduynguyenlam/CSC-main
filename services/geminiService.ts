@@ -83,28 +83,30 @@ export interface CustomerAssistRequest {
     conversationHistory?: ChatMessage[];
 }
 
+export interface CompactCustomerContext {
+    customer_profile: {
+        customer_id: number;
+        full_name: string;
+        phone_number: string;
+        email?: string | null;
+        address?: string | null;
+        notes?: string | null;
+    };
+    account_summary: {
+        total_orders: number;
+        total_logged_calls: number;
+        total_previous_calls: number;
+        unresolved_issue_count: number;
+    };
+    recent_orders: Array<Record<string, unknown>>;
+    recent_calls: Array<Record<string, unknown>>;
+    unresolved_issues: Array<Record<string, unknown>>;
+}
+
 export interface CustomerAssistResponse {
     success: boolean;
     response: string;
-    customerContext: {
-        customer_profile: {
-            customer_id: number;
-            full_name: string;
-            phone_number: string;
-            email?: string | null;
-            address?: string | null;
-            notes?: string | null;
-        };
-        account_summary: {
-            total_orders: number;
-            total_logged_calls: number;
-            total_previous_calls: number;
-            unresolved_issue_count: number;
-        };
-        recent_orders: Array<Record<string, unknown>>;
-        recent_calls: Array<Record<string, unknown>>;
-        unresolved_issues: Array<Record<string, unknown>>;
-    };
+    customerContext: CompactCustomerContext;
     metadata: {
         model: string;
         usedFallback: boolean;
@@ -117,6 +119,41 @@ export interface CustomerAssistResponse {
             matchCount: number;
             vectorIdPrefix?: string | null;
         };
+    };
+}
+
+export interface CustomerContextResponse {
+    success: boolean;
+    customerContext: CompactCustomerContext;
+    metadata: {
+        source: string;
+        customerId: number;
+        timestamp: string;
+    };
+}
+
+export interface CompleteCallRequest {
+    customerId: number;
+    transcript: string;
+    summary?: string;
+    agentName?: string;
+    callType?: string;
+    suggestion?: string;
+    emotion?: string;
+    keyIndicators?: string[];
+    priority?: string;
+    sentimentScore?: number;
+}
+
+export interface CompleteCallResponse {
+    success: boolean;
+    callLogId: number;
+    callSummary: string;
+    customerContext: CompactCustomerContext;
+    metadata: {
+        source: string;
+        customerId: number;
+        timestamp: string;
     };
 }
 
@@ -325,6 +362,45 @@ export async function getCustomerAssistResponse(request: CustomerAssistRequest):
     }
 
     return data as CustomerAssistResponse;
+}
+
+export async function getCustomerContext(options: { customerId?: number; callLogId?: number }): Promise<CustomerContextResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (typeof options.customerId === 'number') {
+        searchParams.set('customerId', String(options.customerId));
+    }
+
+    if (typeof options.callLogId === 'number') {
+        searchParams.set('callLogId', String(options.callLogId));
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/customer-assist/context?${searchParams.toString()}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return data as CustomerContextResponse;
+}
+
+export async function completeCustomerCall(request: CompleteCallRequest): Promise<CompleteCallResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/customer-assist/complete-call`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return data as CompleteCallResponse;
 }
 
 export async function quickSentimentCheck(text: string): Promise<SentimentAnalysis> {

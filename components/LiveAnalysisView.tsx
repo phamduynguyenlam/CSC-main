@@ -39,7 +39,10 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   analyzeTranscriptForSuggestions,
+  completeCustomerCall,
+  CompactCustomerContext,
   getCustomerAssistResponse,
+  getCustomerContext,
   SentimentAnalysis,
 } from '../services/geminiService';
 
@@ -612,6 +615,14 @@ interface AudioAnalysisState {
   recordingStartTime: number | null;
 }
 
+type CustomerContextPanelState = {
+  data: CompactCustomerContext | null;
+  loading: boolean;
+  error: string | null;
+};
+
+type CustomerContextDirectory = Record<number, CompactCustomerContext>;
+
 /**
  * LiveAnalysisView Component
  * 
@@ -636,6 +647,12 @@ interface AudioAnalysisState {
 const LiveAnalysisView: React.FC = () => {
   // Call selection state for demo purposes
   const [selectedCall, setSelectedCall] = useState<string | null>('live-analysis');
+  const [customerContextPanel, setCustomerContextPanel] = useState<CustomerContextPanelState>({
+    data: null,
+    loading: false,
+    error: null
+  });
+  const [customerContextDirectory, setCustomerContextDirectory] = useState<CustomerContextDirectory>({});
   
   // Pending transcript accumulator for real-time input
   const [pendingTranscript, setPendingTranscript] = useState<string>('');
@@ -716,6 +733,7 @@ const LiveAnalysisView: React.FC = () => {
   const recognitionRef = useRef<any>(null);
   const recordingRef = useRef<boolean>(false); // <--- new
   const levelDataRef = useRef<Uint8Array | null>(null);
+  const [recordingTargetCallId, setRecordingTargetCallId] = useState<string | null>(null);
 
   /**
    * Mock Call Data for Demo
@@ -726,6 +744,7 @@ const LiveAnalysisView: React.FC = () => {
   const activeCalls = [
     {
       id: 'live-analysis',
+      customerId: 1,
       name: 'Phân tích trực tiếp',
       duration: 'Real-time',
       sentiment: audioState.emotion,
@@ -733,6 +752,7 @@ const LiveAnalysisView: React.FC = () => {
     },
     {
       id: 'nmtuan',
+      customerId: 2,
       name: 'Nguyễn Minh Tuấn',
       duration: '5:24',
       sentiment: 'Thất vọng',
@@ -740,6 +760,7 @@ const LiveAnalysisView: React.FC = () => {
     },
     {
       id: 'ndluong',
+      customerId: 3,
       name: 'Nguyễn Đức Lương',
       duration: '12:03',
       sentiment: 'Trung tính',
@@ -747,6 +768,7 @@ const LiveAnalysisView: React.FC = () => {
     },
     {
       id: 'htphuong',
+      customerId: 4,
       name: 'Hoàng Thị Phương',
       duration: '3:45',
       sentiment: 'Tiêu cực',
@@ -795,6 +817,41 @@ const LiveAnalysisView: React.FC = () => {
       case 'Cao': return 'text-red-500 dark:text-green-400';
       default: return 'text-yellow-500';
     }
+  };
+
+  const formatContextDate = (value: unknown) => {
+    if (!value) return 'KhÃ´ng rÃµ';
+
+    const date = new Date(String(value));
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return new Intl.DateTimeFormat('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour12: false
+    }).format(date);
+  };
+
+  const formatContextValue = (value: unknown, fallback = 'KhÃ´ng cÃ³') => {
+    if (value === null || value === undefined || value === '') {
+      return fallback;
+    }
+
+    return String(value);
+  };
+
+  const getResolvedCustomerName = (customerId: number | undefined, fallbackName: string) => {
+    if (!customerId) {
+      return fallbackName;
+    }
+
+    return customerContextDirectory[customerId]?.customer_profile?.full_name || fallbackName;
   };
 
   /**
@@ -1061,7 +1118,7 @@ const LiveAnalysisView: React.FC = () => {
       setAudioState(prev => ({
         ...prev,
         emotion: analysis.emotion,
-        currentSuggestion: `✅ ${mergedSuggestion}`,
+        currentSuggestion: mergedSuggestion,
         sentiment: analysis.sentimentScore || prev.sentiment,
         intensity: analysis.intensity || 'Trung bình',
         keyIndicators: analysis.keyIndicators || [],
@@ -1108,7 +1165,10 @@ const LiveAnalysisView: React.FC = () => {
   // Start recording function
   const startRecording = async () => {
     try {
+      const targetCallId = selectedCall ?? 'live-analysis';
+
       setAudioState(prev => ({ ...prev, error: null }));
+      setRecordingTargetCallId(targetCallId);
       
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: { 
@@ -1175,7 +1235,11 @@ const LiveAnalysisView: React.FC = () => {
   };
 
   // Stop recording function
-  const stopRecording = () => {
+  const stopRecording = async (persistToDatabase = true) => {
+    const activeCallId = recordingTargetCallId ?? selectedCall ?? 'live-analysis';
+    const activeCallDetails = getCallDetails(activeCallId);
+    const transcriptSnapshot = [...audioState.transcript];
+    const transcriptText = buildTranscriptText(transcriptSnapshot);
     if (mediaRecorderRef.current && audioState.isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
@@ -1206,12 +1270,60 @@ const LiveAnalysisView: React.FC = () => {
       recordingStartTime: null,
       currentSuggestion: 'Phân tích hoàn tất! Nhấn "Bắt đầu ghi âm" để thử lại'
     }));
+
+    if (!persistToDatabase || !activeCallDetails?.customerId || transcriptText.length === 0) {
+      setRecordingTargetCallId(null);
+      return;
+    }
+
+    try {
+      setCustomerContextPanel((prev) => ({
+        data: prev.data,
+        loading: true,
+        error: null,
+      }));
+
+      const callSummary = buildCallLogSummary(
+        audioState.emotion,
+        audioState.keyIndicators,
+        audioState.currentSuggestion,
+        audioState.sentiment
+      );
+
+      const result = await completeCustomerCall({
+        customerId: activeCallDetails.customerId,
+        transcript: transcriptText,
+        summary: callSummary,
+        agentName: 'AI Live Analysis',
+        callType: 'inbound',
+        suggestion: audioState.currentSuggestion,
+        emotion: audioState.emotion,
+        keyIndicators: audioState.keyIndicators,
+        priority: audioState.priority,
+        sentimentScore: audioState.sentiment,
+      });
+
+      syncCustomerContext(activeCallDetails.customerId, result.customerContext);
+      setAudioState((prev) => ({
+        ...prev,
+        currentSuggestion: `${prev.currentSuggestion} Cuộc gọi đã được lưu vào database.`,
+      }));
+    } catch (error) {
+      console.error('Lá»—i khi lÆ°u cuá»™c gá»i:', error);
+      setCustomerContextPanel((prev) => ({
+        data: prev.data,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Không thể cập nhật lịch sử cuộc gọi',
+      }));
+    } finally {
+      setRecordingTargetCallId(null);
+    }
   };
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      stopRecording();
+      stopRecording(false);
     };
   }, []);
 
@@ -1282,6 +1394,150 @@ const LiveAnalysisView: React.FC = () => {
   };
 
   const selectedCallDetails = selectedCall ? getCallDetails(selectedCall) : null;
+  const shouldUseActiveRecordingState = Boolean(
+    selectedCallDetails &&
+    (selectedCallDetails.isLive || recordingTargetCallId === selectedCall) &&
+    (audioState.isRecording || audioState.isAnalyzing || audioState.transcript.length > 0)
+  );
+  const displayedCallDetails = selectedCallDetails
+    ? {
+        ...selectedCallDetails,
+        status: shouldUseActiveRecordingState
+          ? (audioState.isRecording ? 'Đang ghi âm' : audioState.isAnalyzing ? 'Đang phân tích' : 'Sẵn sàng phân tích lại')
+          : selectedCallDetails.status,
+        transcript: shouldUseActiveRecordingState && audioState.transcript.length > 0
+          ? audioState.transcript
+          : selectedCallDetails.transcript,
+        emotion: shouldUseActiveRecordingState ? audioState.emotion : selectedCallDetails.emotion,
+        sentiment: shouldUseActiveRecordingState ? audioState.sentiment : selectedCallDetails.sentiment,
+        suggestion: shouldUseActiveRecordingState && audioState.currentSuggestion
+          ? audioState.currentSuggestion
+          : selectedCallDetails.suggestion
+      }
+    : null;
+
+  const buildTranscriptText = (entries: TranscriptEntry[]) => entries
+    .map((entry) => `${entry.speaker}: ${entry.text}`)
+    .join(' ')
+    .trim();
+
+  const buildCallLogSummary = (
+    emotion: string,
+    keyIndicators: string[],
+    suggestion: string,
+    sentiment: number
+  ) => {
+    const emotionPart = emotion ? `Khách hàng ${emotion.toLowerCase()}.` : '';
+    const indicatorPart = keyIndicators.length > 0
+      ? `Nội dung chính: ${keyIndicators.slice(0, 2).join(', ')}.`
+      : '';
+    const suggestionPart = suggestion
+      ? `Hướng xử lý: ${suggestion.replace(/\s+/g, ' ').trim().slice(0, 120)}${suggestion.length > 120 ? '...' : ''}`
+      : '';
+    const sentimentPart = Number.isFinite(sentiment) && sentiment < 5 ? 'Cần theo dõi thêm.' : 'Đã ghi nhận cuộc gọi.';
+
+    return [emotionPart, indicatorPart, suggestionPart, sentimentPart]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+  };
+
+  const syncCustomerContext = (customerId: number, context: CompactCustomerContext) => {
+    setCustomerContextDirectory((prev) => ({
+      ...prev,
+      [customerId]: context,
+    }));
+
+    if (selectedCallDetails?.customerId === customerId) {
+      setCustomerContextPanel({
+        data: context,
+        loading: false,
+        error: null,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const customerId = selectedCallDetails?.customerId;
+
+    if (!customerId) {
+      setCustomerContextPanel({
+        data: null,
+        loading: false,
+        error: null
+      });
+      return;
+    }
+
+    let cancelled = false;
+
+    setCustomerContextPanel(prev => ({
+      data: prev.data,
+      loading: true,
+      error: null
+    }));
+
+    getCustomerContext({ customerId })
+      .then((response) => {
+        if (cancelled) return;
+        setCustomerContextDirectory((prev) => ({
+          ...prev,
+          [customerId]: response.customerContext
+        }));
+        setCustomerContextPanel({
+          data: response.customerContext,
+          loading: false,
+          error: null
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setCustomerContextPanel({
+          data: null,
+          loading: false,
+          error: error instanceof Error ? error.message : 'KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u khÃ¡ch hÃ ng'
+        });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCallDetails?.customerId]);
+
+  useEffect(() => {
+    const customerIds = activeCalls
+      .map((call) => call.customerId)
+      .filter((customerId): customerId is number => typeof customerId === 'number');
+
+    const missingCustomerIds = customerIds.filter((customerId) => !customerContextDirectory[customerId]);
+    if (missingCustomerIds.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+
+    Promise.allSettled(missingCustomerIds.map((customerId) => getCustomerContext({ customerId })))
+      .then((results) => {
+        if (cancelled) return;
+
+        setCustomerContextDirectory((prev) => {
+          const next = { ...prev };
+
+          results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+              next[missingCustomerIds[index]] = result.value.customerContext;
+            }
+          });
+
+          return next;
+        });
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCalls, customerContextDirectory]);
 
   return (
     <div className="space-y-6">
@@ -1314,12 +1570,12 @@ const LiveAnalysisView: React.FC = () => {
                   ) : (
                     <div className="w-10 h-10 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center">
                       <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-                        {call.name.split(' ').map(n => n[0]).join('')}
+                        {getResolvedCustomerName(call.customerId, call.name).split(' ').map(n => n[0]).join('')}
                       </span>
                     </div>
                   )}
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">{call.name}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{getResolvedCustomerName(call.customerId, call.name)}</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">{call.duration}</div>
                   </div>
                 </div>
@@ -1331,6 +1587,20 @@ const LiveAnalysisView: React.FC = () => {
                   <span className={`text-sm font-medium ${getRiskColor(call.risk)}`}>
                     Rủi ro: {call.risk}
                   </span>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedCall(call.id);
+                    }}
+                    className={`inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                      selectedCall === call.id
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-50 dark:bg-slate-800 dark:text-sky-300 dark:border-slate-600 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    Tiếp tục
+                  </button>
                 </div>
               </div>
             </div>
@@ -1339,19 +1609,20 @@ const LiveAnalysisView: React.FC = () => {
       </div>
 
       {/* Live Analysis Details */}
-      {selectedCallDetails && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {displayedCallDetails && (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Live Audio Analysis or Call Transcript */}
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {selectedCallDetails.isLive ? 'Phân tích trực tiếp  ' : `Cuộc gọi với ${selectedCallDetails.name}  `}
+                {displayedCallDetails.isLive ? 'Phân tích trực tiếp  ' : `Cuộc gọi với ${getResolvedCustomerName(displayedCallDetails.customerId, displayedCallDetails.name)}  `}
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 ${
-                  selectedCallDetails.isLive 
+                  shouldUseActiveRecordingState
                     ? (audioState.isRecording ? 'bg-red-600/10 dark:bg-red-600/20 text-red-600 dark:text-red-600' : 'bg-slate-50 dark:bg-slate-900/20 text-gray-600 dark:text-gray-400')
-                    : (getSentimentColor(selectedCallDetails.status))
+                    : (getSentimentColor(displayedCallDetails.status))
                   }`}>
-                  {selectedCallDetails.status}
+                  {displayedCallDetails.status}
                 </span>
               </h3>
 
@@ -1359,7 +1630,13 @@ const LiveAnalysisView: React.FC = () => {
             
             <div className="p-6">
               {/* Live Analysis Controls */}
-              {selectedCallDetails.isLive && (
+              <div className="mb-6">
+                {!displayedCallDetails.isLive && (
+                  <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Ghi âm để phân tích tiếp cuộc gọi đã chọn và cập nhật gợi ý theo đúng hồ sơ khách hàng.
+                  </p>
+                )}
+                
                 <div className="mb-6">
                   <div className="mb-4 flex flex-col items-center">
                     <button
@@ -1460,23 +1737,23 @@ const LiveAnalysisView: React.FC = () => {
                     </div>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* Sentiment Score Bar */}
               <div className="mb-4">
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  {selectedCallDetails.isLive ? 'Sentiment Score' : 'Sentiment Score'}
+                  {displayedCallDetails.isLive ? 'Sentiment Score' : 'Sentiment Score'}
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full transition-all duration-500 ${
-                      selectedCallDetails.sentiment < 5
+                      displayedCallDetails.sentiment < 5
                         ? 'bg-red-600'
-                        : selectedCallDetails.sentiment < 8
+                        : displayedCallDetails.sentiment < 8
                         ? 'bg-yellow-400'
                         : 'bg-green-600'
                     }`}
-                    style={{width: `${(selectedCallDetails.sentiment / 10) * 100}%`}}
+                    style={{width: `${(displayedCallDetails.sentiment / 10) * 100}%`}}
                   />
                 </div>
               </div>
@@ -1484,18 +1761,18 @@ const LiveAnalysisView: React.FC = () => {
               {/* Live Transcript */}
               <div>
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  {selectedCallDetails.isLive ? 'Bản chép lời' : 'Bản chép lời'}
+                  {displayedCallDetails.isLive ? 'Bản chép lời' : 'Bản chép lời'}
                 </div>
                 <div className="space-y-3 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-                  {selectedCallDetails.transcript.length === 0 && selectedCallDetails.isLive ? (
+                  {displayedCallDetails.transcript.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                       <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
-                      <p>Bắt đầu ghi âm để tạo bản chép lời trực tiếp</p>
+                      <p>{displayedCallDetails.isLive ? 'Bắt đầu ghi âm để tạo bản chép lời trực tiếp' : 'Nhấn "Bắt đầu ghi âm" để phân tích tiếp cuộc gọi này'}</p>
                     </div>
                   ) : (
-                    selectedCallDetails.transcript.map((entry, index) => (
+                    displayedCallDetails.transcript.map((entry, index) => (
                       <div key={index} className="text-sm">
                         <span className={`font-medium ${
                           entry.speaker === 'Customer' ? 'text-blue-700 dark:text-sky-400' : 
@@ -1531,8 +1808,34 @@ const LiveAnalysisView: React.FC = () => {
                   {audioState.isAnalyzing ? 'Đang phân tích...' : 'Kết quả phân tích'}
                 </h4>
                 <p className="text-sm text-blue-900 dark:text-sky-100">
-                  {selectedCallDetails.suggestion}
+                  {displayedCallDetails.suggestion}
                 </p>
+              </div>
+
+              <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-3">
+                <h4 className="text-base font-medium text-gray-900 dark:text-white">Tóm tắt gợi ý AI</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900/40 p-3">
+                    <div className="text-gray-500 dark:text-gray-400">Mức ưu tiên</div>
+                    <div className="mt-1 font-medium text-gray-900 dark:text-white">{audioState.priority}</div>
+                  </div>
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-900/40 p-3">
+                    <div className="text-gray-500 dark:text-gray-400">Giọng điệu đề xuất</div>
+                    <div className="mt-1 font-medium text-gray-900 dark:text-white">{audioState.recommendedTone}</div>
+                  </div>
+                </div>
+                {audioState.keyIndicators.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tín hiệu chính</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {audioState.keyIndicators.map((indicator, index) => (
+                        <span key={index} className="rounded-full bg-slate-100 dark:bg-slate-700 px-3 py-1 text-xs text-gray-700 dark:text-gray-200">
+                          {indicator}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Real-time Coaching Suggestions */}
@@ -1621,7 +1924,7 @@ const LiveAnalysisView: React.FC = () => {
               </div>
 
               {/* Emotion History */}
-              {selectedCallDetails.isLive && audioState.transcript.length > 0 && (
+              {shouldUseActiveRecordingState && audioState.transcript.length > 0 && (
                 <div className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-200 dark:border-gray-700">
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2">Theo dõi cảm xúc</h4>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -1630,6 +1933,127 @@ const LiveAnalysisView: React.FC = () => {
                     Số lượt hội thoại: <span className="font-medium">{audioState.transcript.length}</span>
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md xl:sticky xl:top-6 h-fit">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hồ sơ khách hàng</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Thông tin cá nhân và tóm tắt các lần gọi trước từ database
+              </p>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {customerContextPanel.loading && (
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-slate-900/30 p-4 text-sm text-gray-600 dark:text-gray-300">
+                  Đang tải thông tin khách hàng...
+                </div>
+              )}
+
+              {customerContextPanel.error && (
+                <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20 p-4 text-sm text-red-700 dark:text-red-300">
+                  {customerContextPanel.error}
+                </div>
+              )}
+
+              {!customerContextPanel.loading && !customerContextPanel.error && !customerContextPanel.data && (
+                <div className="rounded-xl border border-dashed border-gray-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/30 p-4 text-sm text-gray-600 dark:text-gray-300">
+                  Chưa có dữ liệu khách hàng để hiển thị. Hãy chọn một cuộc gọi có liên kết với khách hàng trong database.
+                </div>
+              )}
+
+              {customerContextPanel.data && (
+                <>
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="text-base font-semibold text-gray-900 dark:text-white">
+                          {customerContextPanel.data.customer_profile.full_name}
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Mã KH: {customerContextPanel.data.customer_profile.customer_id}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-sky-900/30 dark:text-sky-300">
+                        {customerContextPanel.data.account_summary.unresolved_issue_count} vấn đề mở
+                      </span>
+                    </div>
+
+                    <div className="mt-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                      <div><span className="font-medium">Số điện thoại:</span> {formatContextValue(customerContextPanel.data.customer_profile.phone_number)}</div>
+                      <div><span className="font-medium">Email:</span> {formatContextValue(customerContextPanel.data.customer_profile.email)}</div>
+                      <div><span className="font-medium">Địa chỉ:</span> {formatContextValue(customerContextPanel.data.customer_profile.address)}</div>
+                      <div><span className="font-medium">Ghi chú:</span> {formatContextValue(customerContextPanel.data.customer_profile.notes, 'Không có ghi chú')}</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl bg-slate-50 dark:bg-slate-900/30 p-4">
+                      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Đơn hàng</div>
+                      <div className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">
+                        {customerContextPanel.data.account_summary.total_orders}
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-slate-50 dark:bg-slate-900/30 p-4">
+                      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Lần gọi</div>
+                      <div className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">
+                        {customerContextPanel.data.account_summary.total_logged_calls + customerContextPanel.data.account_summary.total_previous_calls}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Tóm tắt các lần gọi trước</h4>
+                    <div className="mt-3 space-y-3">
+                      {customerContextPanel.data.recent_calls.length === 0 ? (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Chưa có lịch sử cuộc gọi.</p>
+                      ) : (
+                        customerContextPanel.data.recent_calls.map((call, index) => (
+                          <div key={index} className="rounded-lg bg-slate-50 dark:bg-slate-900/30 p-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {formatContextValue(call.issue_type, 'Không rõ loại cuộc gọi')}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {formatContextDate(call.date)}
+                                </div>
+                              </div>
+                              <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-slate-800 dark:text-gray-300">
+                                {formatContextValue(call.resolution, 'Chưa rõ trạng thái')}
+                              </span>
+                            </div>
+                            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                              {formatContextValue(call.summary, 'Chưa có tóm tắt cho cuộc gọi này')}
+                            </p>
+                            {'agent_name' in call && call.agent_name && (
+                              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                Agent: {formatContextValue(call.agent_name)}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {customerContextPanel.data.unresolved_issues.length > 0 && (
+                    <div className="rounded-xl border border-yellow-200 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-950/20 p-4">
+                      <h4 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">Vấn đề chưa xử lý</h4>
+                      <div className="mt-3 space-y-2">
+                        {customerContextPanel.data.unresolved_issues.map((issue, index) => (
+                          <div key={index} className="text-sm text-yellow-900 dark:text-yellow-100">
+                            <div className="font-medium">{formatContextValue(issue.issue_type, 'Không rõ vấn đề')}</div>
+                            <div>{formatContextValue(issue.summary, 'Chưa có mô tả')}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -82,10 +82,16 @@ function buildTranscriptAnalysisPrompt(transcript, customerContext = null) {
         4. Xac dinh intensity la low, medium hoac high dua tren tu ngu, dau cau, su lap lai, va muc do buc xuc.
 
         5. coachingTips, phraseExamples va warningFlags phai viet bang tieng Viet tu nhien, dung cho agent call center.
+        5a. Viet NGAN GON:
+        - suggestion: toi da 2 cau
+        - moi coachingTip: toi da 1 cau ngan
+        - moi phraseExample: toi da 1 cau ngan
+        - moi warningFlag: toi da 1 cau ngan
+        - khong lap y
 
         6. Neu transcript co dau hieu van de lap lai, hay tang priority.
 
-        CHI TRA VE JSON HOP LE, KHONG THEM GIAI THICH NGOAI JSON:
+        CHI TRA VE JSON HOP LE, KHONG DUNG markdown code fence, KHONG THEM GIAI THICH NGOAI JSON:
         {
           "emotion": "mot nhan cam xuc trong danh sach hop le",
           "sentimentScore": so tu 1 den 10, co the co so thap phan,
@@ -110,6 +116,32 @@ function buildTranscriptAnalysisPrompt(transcript, customerContext = null) {
           ]
         }
       `;
+}
+
+function extractJsonPayload(text) {
+  if (!text || typeof text !== 'string') {
+    throw new Error('Empty Gemini response');
+  }
+
+  const trimmed = text.trim();
+
+  const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fencedMatch?.[1]) {
+    return fencedMatch[1].trim();
+  }
+
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return trimmed.slice(firstBrace, lastBrace + 1).trim();
+  }
+
+  return trimmed;
+}
+
+function parseGeminiJsonResponse(text) {
+  const jsonPayload = extractJsonPayload(text);
+  return JSON.parse(jsonPayload);
 }
 
 function localizeEmotion(emotion) {
@@ -794,7 +826,11 @@ router.post('/analyze-transcript', async (req, res) => {
 
       try {
         // Parse JSON response from Gemini AI
-        const parsed = JSON.parse(text);
+        const parsed = parseGeminiJsonResponse(text);
+        const coachingTips = Array.isArray(parsed.coachingTips) ? parsed.coachingTips.filter(Boolean).slice(0, 3) : null;
+        const phraseExamples = Array.isArray(parsed.phraseExamples) ? parsed.phraseExamples.filter(Boolean).slice(0, 3) : null;
+        const warningFlags = Array.isArray(parsed.warningFlags) ? parsed.warningFlags.filter(Boolean).slice(0, 3) : null;
+        const keyIndicators = Array.isArray(parsed.keyIndicators) ? parsed.keyIndicators.filter(Boolean).slice(0, 4) : [];
         
         // Format and validate the response data with enhanced coaching features
         const analysisResult = {
@@ -822,6 +858,14 @@ router.post('/analyze-transcript', async (req, res) => {
           customerContextMatched: Boolean(customerContext)
         };
         
+        analysisResult.suggestion = typeof parsed.suggestion === 'string' && parsed.suggestion.trim()
+          ? parsed.suggestion.trim()
+          : analysisResult.suggestion;
+        analysisResult.keyIndicators = keyIndicators;
+        analysisResult.coachingTips = coachingTips || analysisResult.coachingTips;
+        analysisResult.phraseExamples = phraseExamples || analysisResult.phraseExamples;
+        analysisResult.warningFlags = warningFlags || analysisResult.warningFlags;
+
         res.json(analysisResult);
       } catch (parseError) {
         // JSON parsing failed - use local fallback analysis with enhanced coaching
